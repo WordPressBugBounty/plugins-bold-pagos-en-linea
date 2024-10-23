@@ -1,0 +1,12 @@
+.payment_method_bold_co label[for=payment_method_bold_co] img{
+    width: 75px;
+}
+
+.bold_co_purchase_summary{
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 16px;
+    letter-spacing: 0em;
+    text-align: left;
+}

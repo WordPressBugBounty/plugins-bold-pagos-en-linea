@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es-co">
+<head>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let js;
+        js = document.createElement('script');
+        js.onload = () => {
+            window.dispatchEvent(new Event('boldCheckoutLoaded'));
+        };
+        js.onerror = () => {
+            window.dispatchEvent(new Event('boldCheckoutLoadFailed'));
+        };
+        js.src = urlParams.get('script_url');
+        document.head.appendChild(js);
+    </script>
+</head>
+<body>
+<script>
+    window.addEventListener("boldCheckoutLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const checkout = new BoldCheckout({
+            currency: urlParams.get('currency'),
+            apiKey: urlParams.get('auth_token'),
+            amount: urlParams.get('amount_in_cents'),
+            orderId: urlParams.get('order_reference'),
+            description: urlParams.get('description'),
+            integritySignature: urlParams.get('signature'),
+            redirectionUrl: urlParams.get('return_url'),
+            originUrl: urlParams.get('origin_url'),
+            integrationType: urlParams.get('integration_type'),
+            customerData: urlParams.get('customer_data'),
+            billingAddress: urlParams.get('billing_address'),
+        });
+        checkout.open();
+    });
+    window.addEventListener("boldCheckoutLoadFailed", function () {
+        console.error("No se logró redireccionar al checkout de Bold");
+        history.back();
+    });
+</script>
+</body>
+</html>

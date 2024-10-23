@@ -1,0 +1,23 @@
+{
+    "name": "bold/bold-pagos-en-linea",
+    "description": "Integra la pasarela de pagos Bold en tu sitio web.",
+    "type": "wordpress-plugin",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "BoldPagosEnLinea\\": [
+                "include"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "Bold",
+            "email": "soporte.online@bold.co"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "mp-plugins/php-sdk": "2.12.0"
+    }
+}
