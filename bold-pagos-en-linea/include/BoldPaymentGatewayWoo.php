@@ -26,7 +26,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		$this->init_settings();
 
 		$this->description = $this->bold_upload_checkout_description();
-		$this->title       = __( 'Bold - tarjetas y PSE ', 'bold-pagos-en-linea' );
+		$this->title       = __( 'Bold pagos en línea ', 'bold-pagos-en-linea' );
 		$this->bold_upload_icon();
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array(
@@ -40,7 +40,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.0.2', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.0.3', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
 	}
 
@@ -298,24 +298,24 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	// Actualización del estado de la transacción
 	function bold_update_status_payment( $order, $get_response ): string {
 		$status_response = strtoupper( sanitize_text_field($get_response['payment_status']) );
-		/* translators: %1$s payment status reported from Bold */
-		$message_error_translate = __('La transacción en Bold se encuentra en estado: %1$s', 'bold-pagos-en-linea');
-		$message_status = sprintf(
-			$message_error_translate,
-			$status_response
-		);
-		$order->add_order_note( $message_status );
 
 		switch ( $status_response ) {
 			//Transactions in process
 			case 'PENDING':
 			case 'PROCESSING':
+				/* translators: %1$s payment status reported from Bold */
+				$message_error_translate = __('La transacción en Bold se encuentra en estado: %1$s', 'bold-pagos-en-linea');
+				$message_status = sprintf(
+					$message_error_translate,
+					$status_response
+				);
+				$order->add_order_note( $message_status );
 				return "$status_response";
 			//Final states
 			case 'SALE_APPROVED':
 			case 'APPROVED':
-				$order_status = $order->get_status();
-				if(in_array($order_status, ['pending', 'on-hold', 'failed'])){
+				$is_payed = $order->is_paid();
+				if(!$is_payed){
 					if(array_key_exists( 'payment_method', $get_response ) && isset($get_response['payment_method'])){
 						$payment_method = sanitize_text_field( $get_response['payment_method'] );
 						/* translators: %1$s payment method reported from Bold */
@@ -341,7 +341,6 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 					} else {
 						$order->payment_complete();
 					}
-					wc_reduce_stock_levels( $order->get_id() );
 				}
 
 				return "processing";
@@ -503,8 +502,8 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.0.2', 'all' );
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.0.2', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.0.3', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.0.3', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -571,7 +570,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'return_url'       => $return_url,
 			'origin_url'       => $origin_url,
 			'script_url'       => 'https://checkout.bold.co/library/boldPaymentButton.js',
-			'integration_type' => 'wordpress-woocommerce-3.0.2',
+			'integration_type' => 'wordpress-woocommerce-3.0.3',
 			'customer_data'    => urlencode( $data_billing_order['customer_data'] ),
 			'billing_address'  => urlencode( $data_billing_order['billing_address'] ),
 		);

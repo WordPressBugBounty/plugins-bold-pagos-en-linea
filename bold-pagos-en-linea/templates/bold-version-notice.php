@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 use BoldPagosEnLinea\BoldCommon;
 $plugin_local_version  = BoldCommon::getPluginVersion();
 $plugin_remove_version = BoldCommon::getPluginVersionRemote();
-wp_enqueue_style( 'woocommerce_bold_admin_notification_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_notification_style.css', false, '3.0.2', 'all' );
+wp_enqueue_style( 'woocommerce_bold_admin_notification_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_notification_style.css', false, '3.0.3', 'all' );
 ?>
 <div
     class="notice notice-warning is-dismissible bold_plugin_update_notification">
