@@ -1,0 +1,481 @@
+# Copyright (C) 2024 Bold
+# This file is distributed under the GPLv3.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Bold pagos en linea  3.0.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bold-pagos-en-linea\n"
+"POT-Creation-Date: 2024-11-06 16:56-0500\n"
+"PO-Revision-Date: 2024-11-06 17:48-0500\n"
+"Last-Translator: Jorge Carrillo <jorge.carrillo@bold.co>\n"
+"Language-Team: Bold <wordpress.developers@bold.co>\n"
+"Language: es_CO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.5\n"
+"X-Domain: bold-pagos-en-linea\n"
+
+#. Plugin Name of the plugin
+#: bold-co.php
+msgid "Bold pagos en linea "
+msgstr "Bold pagos en linea "
+
+#. Plugin URI of the plugin
+#: bold-co.php
+msgid "https://developers.bold.co/pagos-en-linea/boton-de-pagos/plugins/wordpress"
+msgstr "https://developers.bold.co/pagos-en-linea/boton-de-pagos/plugins/wordpress"
+
+#. Description of the plugin
+#: bold-co.php
+msgid "Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes."
+msgstr "Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes."
+
+#. Author of the plugin
+#: bold-co.php include/BoldPaymentGatewayWoo.php:19
+msgid "Bold"
+msgstr "Bold"
+
+#. Author URI of the plugin
+#: bold-co.php
+msgid "http://www.bold.co/"
+msgstr "http://www.bold.co/"
+
+#: bold-co.php:70
+msgid "Ajustes"
+msgstr "Ajustes"
+
+#: bold-co.php:71
+msgid "Documentación"
+msgstr "Documentación"
+
+#: bold-co.php:72
+msgid "Soporte"
+msgstr "Soporte"
+
+#: bold-co.php:86
+msgid "Califica Bold pagos en linea en WordPress.org"
+msgstr "Califica Bold pagos en linea en WordPress.org"
+
+#: include/BoldCommon.php:161
+msgid "Tus llaves de identidad y secreta son inválidas, revisa la información."
+msgstr "Tus llaves de identidad y secreta son inválidas, revisa la información."
+
+#: include/BoldMenuAdmin.php:60
+msgid "Actualizaste tus órdenes."
+msgstr "Actualizaste tus órdenes."
+
+#: include/BoldMenuAdmin.php:63
+msgid "No se pudieron actualizar tus órdenes, vuelve a intentarlo."
+msgstr "No se pudieron actualizar tus órdenes, vuelve a intentarlo."
+
+#: include/BoldMenuAdmin.php:67
+msgid "No se pudo actualizar la información, no paso la verificación de seguridad. Intente de nuevo."
+msgstr "No se pudo actualizar la información, no paso la verificación de seguridad. Intente de nuevo."
+
+#: include/BoldMenuAdmin.php:74
+msgid "No se pudo guardar la información, no paso la verificación de seguridad. Intente de nuevo."
+msgstr "No se pudo guardar la información, no paso la verificación de seguridad. Intente de nuevo."
+
+#: include/BoldMenuAdmin.php:84
+msgid "Guardaste tus configuraciones."
+msgstr "Guardaste tus configuraciones."
+
+#: include/BoldMenuAdmin.php:85
+msgid "Guardaste tus configuraciones, recuerda habilitar el método de pago."
+msgstr "Guardaste tus configuraciones, recuerda habilitar el método de pago."
+
+#: include/BoldPaymentGatewayWoo.php:20
+msgid "Paga con Bold"
+msgstr "Paga con Bold"
+
+#: include/BoldPaymentGatewayWoo.php:21
+msgid "Integración de la pasarela de pagos Bold con WooCommerce."
+msgstr "Integración de la pasarela de pagos Bold con WooCommerce."
+
+#: include/BoldPaymentGatewayWoo.php:29
+msgid "Bold pagos en línea "
+msgstr "Bold pagos en línea "
+
+#. translators: %1$s addon message if is sanbox
+#: include/BoldPaymentGatewayWoo.php:120
+msgid "Recuerda configurar tus llaves de integración en modo %1$s antes de habilitar el plugin."
+msgstr "Recuerda configurar tus llaves de integración en modo %1$s antes de habilitar el plugin."
+
+#. translators: %1$s currencies allowed for use payment method
+#: include/BoldPaymentGatewayWoo.php:131
+msgid "Recuerda que en Bold por el momento solo aceptamos %1$s"
+msgstr "Recuerda que en Bold por el momento solo aceptamos %1$s"
+
+#. translators: %1$s prefix message if is sanbox
+#: include/BoldPaymentGatewayWoo.php:254
+msgid "%1$s En este momento no puedes pagar con Bold. Si quieres usar este método de pago, por favor comunícate con el comercio."
+msgstr "%1$s En este momento no puedes pagar con Bold. Si quieres usar este método de pago, por favor comunícate con el comercio."
+
+#. translators: %1$s payment status reported from Bold
+#: include/BoldPaymentGatewayWoo.php:307
+msgid "La transacción en Bold se encuentra en estado: %1$s"
+msgstr "La transacción en Bold se encuentra en estado: %1$s"
+
+#. translators: %1$s payment method reported from Bold
+#: include/BoldPaymentGatewayWoo.php:322
+msgid "El pago se realizó a través de %1$s"
+msgstr "El pago se realizó a través de %1$s"
+
+#. translators: %1$s number of order. %2$s status of transaction.
+#: include/BoldPaymentGatewayWoo.php:332
+msgid "El numero de transacción en Bold para esta orden  %1$s es: %2$s"
+msgstr "El numero de transacción en Bold para esta orden  %1$s es: %2$s"
+
+#: include/BoldPaymentGatewayWoo.php:349
+msgid "Se realizó anulación de la transacción"
+msgstr "Se realizó anulación de la transacción"
+
+#: include/BoldPaymentGatewayWoo.php:424
+msgid "Esta orden es de prueba. "
+msgstr "Esta orden es de prueba. "
+
+#: include/BoldPaymentGatewayWoo.php:427
+msgid "La orden no fue recibida. Por favor, póngase en contacto con el administrador para validar el pago."
+msgstr "La orden no fue recibida. Por favor, póngase en contacto con el administrador para validar el pago."
+
+#. translators: %1$s type of transaction test/prod. %2$s custom message to note in order.
+#: include/BoldPaymentGatewayWoo.php:434
+msgid "%1$s Su orden tiene el estado \"%2$s\""
+msgstr "%1$s Su orden tiene el estado \"%2$s\""
+
+#: include/BoldPaymentGatewayWoo.php:446
+msgid "Aún no confirmamos el estado de tu pago. Espera unos segundos y recarga la página nuevamente."
+msgstr "Aún no confirmamos el estado de tu pago. Espera unos segundos y recarga la página nuevamente."
+
+#. translators: %1$s type of transaction test/prod. %2$s custom message to note in order. %3$s the status of transaction received from Bold
+#: include/BoldPaymentGatewayWoo.php:449
+msgid "<b>%1$s</b>%2$s El estado de su transacción es: <b>\"%3$s\"</b>"
+msgstr "<b>%1$s</b>%2$s El estado de su transacción es: <b>\"%3$s\"</b>"
+
+#. translators: %s the custom short description for payments in checkout processed with Bold
+#: include/BoldPaymentGatewayWoo.php:555
+msgid "Pago de mi pedido #%s"
+msgstr "Pago de mi pedido #%s"
+
+#: include/BoldPaymentGatewayWoo.php:582
+msgid "Esta orden es de prueba"
+msgstr "Esta orden es de prueba"
+
+#: include/BoldSettingModel.php:29
+msgid "Tienes órdenes pendientes de pago o en estado fallido en este momento, no se puede editar el prefijo hasta que se actualicen."
+msgstr "Tienes órdenes pendientes de pago o en estado fallido en este momento, no se puede editar el prefijo hasta que se actualicen."
+
+#: include/BoldSettingModel.php:35
+msgid "Debes agregar un prefijo. Por defecto tomara un identificador."
+msgstr "Debes agregar un prefijo. Por defecto tomara un identificador."
+
+#: include/BoldSettingModel.php:42
+msgid "Solo se aceptan valores alfanuméricos, \"_\" y \"-\""
+msgstr "Solo se aceptan valores alfanuméricos, \"_\" y \"-\""
+
+#. translators: %1$s the custom prefix set by the admin for their orders processed with Bold
+#: include/BoldSettingModel.php:49
+msgid "El prefijo no puede iniciar con la palabra \"%1$s\""
+msgstr "El prefijo no puede iniciar con la palabra \"%1$s\""
+
+#: include/BoldSettingModel.php:89
+msgid "La URL de retorno por abandono es inválida, debe iniciar con el protocolo https:// y a ser posible del dominio de tu negocio online."
+msgstr "La URL de retorno por abandono es inválida, debe iniciar con el protocolo https:// y a ser posible del dominio de tu negocio online."
+
+#. translators: %1$s the webhook API url that automatically updates orders processed with Bold
+#: include/BoldSettingModel.php:245
+msgid "Tu webhook aun no esta configurado, inicia sesión en Bold y configura el webhook %1$s"
+msgstr "Tu webhook aun no esta configurado, inicia sesión en Bold y configura el webhook %1$s"
+
+#. translators: %1$s the webhook API url that automatically updates orders processed with Bold
+#: include/BoldSettingModel.php:255
+msgid "No tienes ningun webhook configurado, inicia sesión en Bold y configura el webhook %1$s"
+msgstr "No tienes ningun webhook configurado, inicia sesión en Bold y configura el webhook %1$s"
+
+#: include/BoldShortcode.php:38
+msgid "Por favor verifica la configuración."
+msgstr "Por favor verifica la configuración."
+
+#: templates/bold-admin_panel.php:40
+msgid "Ir a deshabilitar el método de pago"
+msgstr "Ir a deshabilitar el método de pago"
+
+#: templates/bold-admin_panel.php:40
+msgid "Ir a habilitar el método de pago"
+msgstr "Ir a habilitar el método de pago"
+
+#: templates/bold-admin_panel.php:55
+msgid "Lleva las ventas de tu página web a otro nivel con Bold"
+msgstr "Lleva las ventas de tu página web a otro nivel con Bold"
+
+#: templates/bold-admin_panel.php:58
+msgid "Pásate al Botón de pagos con la mejor experiencia para ti y tus clientes."
+msgstr "Pásate al Botón de pagos con la mejor experiencia para ti y tus clientes."
+
+#: templates/bold-admin_panel.php:70
+#: templates/config-fields/payment-method-field.php:10
+msgid "Método de pago"
+msgstr "Método de pago"
+
+#: templates/bold-admin_panel.php:71
+msgid "Para habilitar el método de pago y empezar a recibir pagos con Bold, debes completar las configuraciones y hacer clic en \"Guardar cambios\"."
+msgstr "Para habilitar el método de pago y empezar a recibir pagos con Bold, debes completar las configuraciones y hacer clic en \"Guardar cambios\"."
+
+#: templates/bold-admin_panel.php:93
+msgid "Requisitos previos"
+msgstr "Requisitos previos"
+
+#: templates/bold-admin_panel.php:97 templates/bold-admin_panel.php:98
+msgid "Version mínima recomendada de"
+msgstr "Version mínima recomendada de"
+
+#: templates/bold-admin_panel.php:99
+msgid "Llaves de integración"
+msgstr "Llaves de integración"
+
+#: templates/bold-admin_panel.php:102
+msgid "Para conocer más detalles acerca de la configuración e integración del plugin del Botón de pagos Bold, puedes ver la"
+msgstr "Para conocer más detalles acerca de la configuración e integración del plugin del Botón de pagos Bold, puedes ver la"
+
+#: templates/bold-admin_panel.php:108
+msgid "documentación oficial"
+msgstr "documentación oficial"
+
+#: templates/bold-admin_panel.php:121
+msgid "Tarifas que se adaptan a cada tipo de negocio"
+msgstr "Tarifas que se adaptan a cada tipo de negocio"
+
+#: templates/bold-admin_panel.php:125
+msgid "Conoce nuestras tarifas para negocios que venden hasta $20 millones con Bold al mes."
+msgstr "Conoce nuestras tarifas para negocios que venden hasta $20 millones con Bold al mes."
+
+#: templates/bold-admin_panel.php:127
+msgid "Conocer más sobre tarifas"
+msgstr "Conocer más sobre tarifas"
+
+#: templates/bold-admin_panel.php:131
+msgid "Si tus ventas son mayores, te podemos ofrecer una tarifa especial."
+msgstr "Si tus ventas son mayores, te podemos ofrecer una tarifa especial."
+
+#: templates/bold-admin_panel.php:133
+msgid "Hablemos"
+msgstr "Hablemos"
+
+#: templates/bold-admin_panel.php:141
+msgid "Ingresa tus llaves de integración"
+msgstr "Ingresa tus llaves de integración"
+
+#: templates/bold-admin_panel.php:144
+msgid "Conoce más sobre las llaves de integración y cómo puedes acceder a ellas"
+msgstr "Conoce más sobre las llaves de integración y cómo puedes acceder a ellas"
+
+#: templates/bold-admin_panel.php:151
+msgid "aquí."
+msgstr "aquí."
+
+#: templates/bold-admin_panel.php:158
+msgid "Llaves de producción"
+msgstr "Llaves de producción"
+
+#: templates/bold-admin_panel.php:161
+msgid "Estas llaves sirven para identificar tu comercio dentro de Bold y garantizar la seguridad en las transacciones."
+msgstr "Estas llaves sirven para identificar tu comercio dentro de Bold y garantizar la seguridad en las transacciones."
+
+#: templates/bold-admin_panel.php:165
+msgid "Llave de identidad"
+msgstr "Llave de identidad"
+
+#: templates/bold-admin_panel.php:176
+msgid "Llave secreta"
+msgstr "Llave secreta"
+
+#: templates/bold-admin_panel.php:192
+msgid "Llaves de ambiente de pruebas"
+msgstr "Llaves de ambiente de pruebas"
+
+#: templates/bold-admin_panel.php:195
+msgid "Estas llaves sirven para testear la implementación del módulo de Bold en tu página web."
+msgstr "Estas llaves sirven para testear la implementación del módulo de Bold en tu página web."
+
+#: templates/bold-admin_panel.php:199
+msgid "Llave de identidad de prueba"
+msgstr "Llave de identidad de prueba"
+
+#: templates/bold-admin_panel.php:210
+msgid "Llave secreta de prueba"
+msgstr "Llave secreta de prueba"
+
+#: templates/bold-admin_panel.php:225
+msgid "Escoge qué modo quieres usar"
+msgstr "Escoge qué modo quieres usar"
+
+#: templates/bold-admin_panel.php:243
+msgid "Modo de producción"
+msgstr "Modo de producción"
+
+#: templates/bold-admin_panel.php:245
+msgid ""
+"Usa este modo luego de haber completado toda la integración, para que tus clientes puedan hacer\n"
+"                    pagos reales en tu página web."
+msgstr ""
+"Usa este modo luego de haber completado toda la integración, para que tus clientes puedan hacer\n"
+"                    pagos reales en tu página web."
+
+#: templates/bold-admin_panel.php:250 templates/bold-admin_panel.php:276
+msgid "Activo"
+msgstr "Activo"
+
+#: templates/bold-admin_panel.php:250 templates/bold-admin_panel.php:276
+msgid "Inactivo"
+msgstr "Inactivo"
+
+#: templates/bold-admin_panel.php:270
+msgid "Modo de prueba"
+msgstr "Modo de prueba"
+
+#: templates/bold-admin_panel.php:272
+msgid "Usa este modo para que puedas integrar nuestras soluciones de pago sin tener que usar dinero real durante la fase de desarrollo."
+msgstr "Usa este modo para que puedas integrar nuestras soluciones de pago sin tener que usar dinero real durante la fase de desarrollo."
+
+#: templates/bold-admin_panel.php:286
+msgid "Datos de prueba"
+msgstr "Datos de prueba"
+
+#: templates/bold-admin_panel.php:288
+msgid "Haz una compra simulada y testea tu integración, activando el modo de prueba. Usa los"
+msgstr "Haz una compra simulada y testea tu integración, activando el modo de prueba. Usa los"
+
+#: templates/bold-admin_panel.php:295
+msgid "datos de prueba."
+msgstr "datos de prueba."
+
+#: templates/bold-admin_panel.php:302
+msgid "Notificaciones de venta"
+msgstr "Notificaciones de venta"
+
+#: templates/bold-admin_panel.php:305
+msgid "Webhook (Obligatorio)"
+msgstr "Webhook (Obligatorio)"
+
+#: templates/bold-admin_panel.php:308
+msgid ""
+"Configura esta opción para recibir notificaciones automatizadas de los estados de las transacciones\n"
+"                    hechas con nuestros métodos de pago, o si estás presentando inconvenientes con la actualización del\n"
+"                    estado de las órdenes."
+msgstr ""
+"Configura esta opción para recibir notificaciones automatizadas de los estados de las transacciones\n"
+"                    hechas con nuestros métodos de pago, o si estás presentando inconvenientes con la actualización del\n"
+"                    estado de las órdenes."
+
+#: templates/bold-admin_panel.php:310 templates/bold-admin_panel.php:418
+#: templates/bold-admin_panel.php:436
+msgid "Conoce más"
+msgstr "Conoce más"
+
+#: templates/bold-admin_panel.php:314 templates/bold-admin_panel.php:420
+#: templates/bold-admin_panel.php:438
+msgid "aquí"
+msgstr "aquí"
+
+#: templates/bold-admin_panel.php:318
+msgid "Inicia sesión en"
+msgstr "Inicia sesión en"
+
+#: templates/bold-admin_panel.php:325
+msgid "y en la sección Integraciones configura el webhook ingresando la siguiente URL:"
+msgstr "y en la sección Integraciones configura el webhook ingresando la siguiente URL:"
+
+#: templates/bold-admin_panel.php:337
+msgid "Copiar URL"
+msgstr "Copiar URL"
+
+#: templates/bold-admin_panel.php:343
+msgid "Actualización manual"
+msgstr "Actualización manual"
+
+#: templates/bold-admin_panel.php:347
+msgid "Actualiza de forma manual los estados de las transacciones hechas con nuestros métodos de pago."
+msgstr "Actualiza de forma manual los estados de las transacciones hechas con nuestros métodos de pago."
+
+#: templates/bold-admin_panel.php:350
+msgid "Actualizar las órdenes de"
+msgstr "Actualizar las órdenes de"
+
+#: templates/bold-admin_panel.php:359
+msgid "Configuraciones adicionales"
+msgstr "Configuraciones adicionales"
+
+#: templates/bold-admin_panel.php:363
+msgid "Color del logo"
+msgstr "Color del logo"
+
+#: templates/bold-admin_panel.php:364
+msgid ""
+"Selecciona el color del logo Bold que mejor se\n"
+"                        ajuste al diseño de tu página web."
+msgstr ""
+"Selecciona el color del logo Bold que mejor se\n"
+"                        ajuste al diseño de tu página web."
+
+#: templates/bold-admin_panel.php:384
+msgid "Logo de color para fondos claros"
+msgstr "Logo de color para fondos claros"
+
+#: templates/bold-admin_panel.php:402
+msgid "Logo de color para fondos oscuros"
+msgstr "Logo de color para fondos oscuros"
+
+#: templates/bold-admin_panel.php:408
+msgid "Prefijo"
+msgstr "Prefijo"
+
+#: templates/bold-admin_panel.php:417
+msgid ""
+"Puedes agregar un prefijo al número de las órdenes. Sólo se aceptan valores alfanuméricos, guiones\n"
+"                    bajos \"_\" y medios \"-\"."
+msgstr ""
+"Puedes agregar un prefijo al número de las órdenes. Sólo se aceptan valores alfanuméricos, guiones\n"
+"                    bajos \"_\" y medios \"-\"."
+
+#: templates/bold-admin_panel.php:426
+msgid "URL retorno por abandono"
+msgstr "URL retorno por abandono"
+
+#: templates/bold-admin_panel.php:435
+msgid "Configura una URL de retorno para redirigir al usuario si abandona o cancela. Si no lo haces, usaremos la URL del checkout predeterminada."
+msgstr "Configura una URL de retorno para redirigir al usuario si abandona o cancela. Si no lo haces, usaremos la URL del checkout predeterminada."
+
+#: templates/bold-admin_panel.php:442
+msgid "Guardar cambios"
+msgstr "Guardar cambios"
+
+#. translators: %s is the remote version of the plugin that is available
+#: templates/bold-version-notice.php:22
+msgid "La nueva versión del Plugin Bold %s ya está disponible para ti"
+msgstr "La nueva versión del Plugin Bold %s ya está disponible para ti"
+
+#. translators: %s is the local version of the plugin that the user has installed
+#: templates/bold-version-notice.php:28
+msgid "Tu versión actual es la %s, actualízala ahora para tener una mejor experiencia y evitar posibles errores."
+msgstr "Tu versión actual es la %s, actualízala ahora para tener una mejor experiencia y evitar posibles errores."
+
+#: templates/config-fields/config-field.php:10
+msgid "Configuraciones del plugin"
+msgstr "Configuraciones del plugin"
+
+#: templates/config-fields/config-field.php:12
+msgid "Configura las opciones a tu gusto para tener una mejor experiencia."
+msgstr "Configura las opciones a tu gusto para tener una mejor experiencia."
+
+#: templates/config-fields/config-field.php:14
+msgid "Ir a configuraciones"
+msgstr "Ir a configuraciones"
+
+#: templates/config-fields/payment-method-field.php:12
+msgid ""
+"Habilita el método de pago, haz clic en \"Guardar cambios\", y empieza a recibir\n"
+"        pagos con Bold."
+msgstr ""
+"Habilita el método de pago, haz clic en \"Guardar cambios\", y empieza a recibir\n"
+"        pagos con Bold."
