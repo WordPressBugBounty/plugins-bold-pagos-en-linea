@@ -6,15 +6,15 @@ if (!defined('ABSPATH')) {
 
 use BoldPagosEnLinea\BoldCommon;
 
-wp_register_script( 'woocommerce_bold_admin_notifications', plugins_url( '/../assets/libraries/awesome-notifications/dist/index.var.js', __FILE__ ), array(), '3.0.3', true );
+wp_register_script( 'woocommerce_bold_admin_notifications', plugins_url( '/../assets/libraries/awesome-notifications/dist/index.var.js', __FILE__ ), array(), '3.0.4', true );
 wp_enqueue_script( 'woocommerce_bold_admin_notifications' );
 wp_register_script( 'woocommerce_bold_admin_panel_js', plugins_url( '/../assets/js/admin-panel.js', __FILE__ ), array(
 	'woocommerce_bold_admin_notifications',
 	'jquery'
-), '3.0.3', true );
+), '3.0.4', true );
 wp_enqueue_script( 'woocommerce_bold_admin_panel_js' );
-wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.0.3', 'all' );
-wp_enqueue_style( 'woocommerce_bold_admin_panel_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_panel_style.css', false, '3.0.3', 'all' );
+wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.0.4', 'all' );
+wp_enqueue_style( 'woocommerce_bold_admin_panel_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_panel_style.css', false, '3.0.4', 'all' );
 
 $prefix                     = BoldCommon::getOptionKey( 'prefix', 'Bold' );
 $testMode                   = BoldCommon::getOptionKey( 'test', 'no' );
@@ -118,23 +118,19 @@ $form_url = add_query_arg( array(
                         src="<?php echo esc_url(plugin_dir_url( __DIR__ )."assets/img/admin-panel/ic_bank_account.svg"); ?>"
                         alt="settings icon"
                 />
-                <span class="title__image__text"><?php echo esc_html__('Tarifas', 'bold-pagos-en-linea') ?></span>
+                <span class="title__image__text"><?php echo esc_html__('Tarifas que se adaptan a cada tipo de negocio', 'bold-pagos-en-linea') ?></span>
             </article>
             <article id="rates__list">
-        <span class="rates__list__item"
-        ><b><?php echo esc_html__('Entre 5 y 10 millones mensuales:', 'bold-pagos-en-linea') ?></b> 2.99% + $900</span
-        >
-                <span class="rates__list__item"
-                ><b><?php echo esc_html__('Entre 3 y 5 millones mensuales:', 'bold-pagos-en-linea') ?></b> 3.09% + $900</span
-                >
-                <span class="rates__list__item"
-                ><b><?php echo esc_html__('Menores a 3 millones mensuales:', 'bold-pagos-en-linea') ?></b> 3.29% + $900</span
-                >
-                <p id="retention__rates">(<?php echo esc_html__('+ retención de impuestos de ley', 'bold-pagos-en-linea') ?>)</p>
+                <span class="rates__list__item">
+                    <?php echo esc_html__('Conoce nuestras tarifas para negocios que venden hasta $20 millones con Bold al mes.', 'bold-pagos-en-linea') ?> 
+                    <a id="rates__link" href="https://bold.co/tarifas" target="_blank" class="link__info">
+                        <?php echo esc_html__('Conocer más sobre tarifas', 'bold-pagos-en-linea') ?>
+                    </a>
+                </span>
+                <span class="rates__list__item">
+                    <?php echo esc_html__('Si tus ventas son mayores, te podemos ofrecer una tarifa especial.', 'bold-pagos-en-linea') ?>
+                </span>
             </article>
-            <a id="rates__link" href="https://bold.co/tarifas" target="_blank" class="link__info">
-                <?php echo esc_html__('Conocer más sobre tarifas', 'bold-pagos-en-linea') ?>
-            </a>
         </div>
     </section>
     <section id="authentication__keys">

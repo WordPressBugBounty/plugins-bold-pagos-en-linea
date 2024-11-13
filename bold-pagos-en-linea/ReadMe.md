@@ -5,7 +5,7 @@
 - Requires at least: 5.5.2
 - Requires PHP: 7.4
 - Tested up to: 6.6.2
-- Stable tag: 3.0.3
+- Stable tag: 3.0.4
 - Network: true
 - License: GPLv3 or later
 - License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -113,13 +113,13 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Upgrade Notice ==
 
-Última versión 3.0.3
+Última versión 3.0.4
 
 == Changelog ==
 
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
-### 3.0.3
+### 3.0.4
 
 - Validación del webhook configurado antes de poder guardar la configuración de llaves. Se añade proceso de desisntalación para borrar los datos guardados y evitar cache de los mismos.
 

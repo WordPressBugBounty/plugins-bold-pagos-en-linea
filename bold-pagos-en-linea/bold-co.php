@@ -2,8 +2,8 @@
 /*
  * Plugin Name: Bold pagos en linea 
  * Plugin URI: https://developers.bold.co/pagos-en-linea/boton-de-pagos/plugins/wordpress
- * Description: Integra la pasarela de pagos Bold en tu sitio web.
- * Version: 3.0.3
+ * Description: Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes.
+ * Version: 3.0.4
  * Author: Bold
  * Author URI: http://www.bold.co/
  * Network: true
@@ -60,7 +60,7 @@ use BoldPagosEnLinea\BoldConstants;
 
 // Función para registrar y cargar el script de botón de pago
 function bold_co_custom_header_code(): void {
-    wp_register_script('woocommerce_bold_payment_button_js', 'https://checkout.bold.co/library/boldPaymentButton.js', [], '3.0.3', true);
+    wp_register_script('woocommerce_bold_payment_button_js', 'https://checkout.bold.co/library/boldPaymentButton.js', [], '3.0.4', true);
     wp_enqueue_script('woocommerce_bold_payment_button_js');
 }
 
@@ -75,6 +75,21 @@ function bold_co_plugin_action_generic_links($links): array {
     return array_merge($plugin_links, $links);
 }
 
+// Añade enlaces rápidos seccion metadata en la pantalla de plugins
+function bold_add_5_star_review_link( $plugin_meta, $plugin_file )
+{
+    if ( strpos( $plugin_file, 'bold-co.php' ) !== false ) {
+        $u    = get_current_user_id();
+        $site = get_site_url();
+        $url_rate = esc_url('https://wordpress.org/support/plugin/bold-pagos-en-linea/reviews/?filter=5&site=' . esc_attr( $site ) . '&u=' . esc_attr( $u ));
+
+        $plugin_meta[] = '<a href="' . $url_rate . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr__( 'Califica Bold pagos en linea en WordPress.org', 'bold-pagos-en-linea' ) . '" style="color: #ffb900">'
+            . str_repeat( '<span class="dashicons dashicons-star-filled" style="font-size: 16px; width:16px; height: 16px"></span>', 5 )
+            . '</a>';
+    }
+    return $plugin_meta;
+}
+
 // Inicializar el plugin
 function bold_co_payment_gateway_woocommerce(): void {
     // Cargar el script del botón de pago en el encabezado
@@ -82,6 +97,12 @@ function bold_co_payment_gateway_woocommerce(): void {
 
     // Añadir enlaces rápidos a la pantalla de plugins
     add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'bold_co_plugin_action_generic_links');
+
+    // Añadir enlaces rápidos en secion metadata a la pantalla de plugins
+	add_filter( 'plugin_row_meta', 'bold_add_5_star_review_link', 10, 2 );
+
+    // Cargar traducciones
+    load_plugin_textdomain( 'bold-pagos-en-linea', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
     
     // Iniciar BoldShortcode
     if (class_exists('BoldPagosEnLinea\BoldShortcode')) {

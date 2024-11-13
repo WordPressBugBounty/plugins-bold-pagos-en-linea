@@ -1,6 +1,6 @@
 {
     "name": "bold/bold-pagos-en-linea",
-    "description": "Integra la pasarela de pagos Bold en tu sitio web.",
+    "description": "Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes.",
     "type": "wordpress-plugin",
     "license": "proprietary",
     "autoload": {

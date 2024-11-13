@@ -5,7 +5,7 @@ Requires at least: 5.5.2
 Tested up to: 6.6.2
 Requires PHP: 7.4
 Network: true
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,17 +18,11 @@ Intégralo a tu página web sin complicaciones ni papeleos. Recibe pagos con tar
 - Recibe pagos con tarjetas nacionales e internacionales, PSE y billeteras digital
 - Recibe el dinero de tus ventas al siguiente día hábil en la cuenta que escojas.
 
-### Conoce las tarifas de nuestro botón de pagos
+### Tarifas que se adaptan a cada tipo de negocio
 
-*¡Cuando tus ventas con Bold suben, tu tarifa baja!*
+Conoce nuestras tarifas para negocios que venden hasta $20 millones con Bold al mes. Conoce más [aquí](https://bold.co/tarifas)
 
-Si tienes ventas superiores a $10 millones al mes, podemos darte una tarifa especial.
-Conoce más aquí
-
-Entre 5 y 10 millones mensuales **2.99% + $900**
-Entre 3 y 5 millones mensuales **3.09% + $900**
-Menores a 3 millones mensuales **3.29% + $900**
-(+retención de impuestos de ley)
+Si tus ventas son mayores, te podemos ofrecer una tarifa especial.
 
 Para más información, visita https://bold.co. Conoce nuestros términos y condiciones [aquí](https://bold.co/legal) y nuestro portal de desarrolladores [aquí](https://developers.bold.co).
 
@@ -108,4 +102,4 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
 == Upgrade Notice ==
-Última versión 3.0.3
+Última versión 3.0.4
