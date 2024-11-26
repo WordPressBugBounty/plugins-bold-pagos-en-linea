@@ -40,7 +40,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.0.4', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.0.5', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
 	}
 
@@ -502,8 +502,8 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.0.4', 'all' );
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.0.4', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.0.5', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.0.5', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -524,33 +524,41 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	public function get_data_billing_order( $order ): array {
-		return array(
-			"customer_data"   => wp_json_encode( array(
-				"email"    => $order->get_billing_email(),
-				"fullName" => $order->get_formatted_billing_full_name(),
-				"phone"    => $order->get_billing_phone(),
-			) ),
-			"billing_address" => wp_json_encode( array(
-				"address" => $order->get_billing_address_1(),
-				"zipCode" => $order->get_billing_postcode(),
-				"city"    => $order->get_billing_city(),
-				"state"   => $order->get_billing_state(),
-				"country" => $order->get_billing_country(),
-			) )
+		$customer_data = array(
+			"email"    => $order->get_billing_email(),
+			"fullName" => $order->get_formatted_billing_full_name(),
+			"phone"    => $order->get_billing_phone(),
 		);
+		$billing_address = array(
+			"address" => $order->get_billing_address_1(),
+			"zipCode" => $order->get_billing_postcode(),
+			"city"    => $order->get_billing_city(),
+			"state"   => $order->get_billing_state(),
+			"country" => $order->get_billing_country(),
+		);
+		ksort($customer_data);
+		ksort($billing_address);
+
+		$data_billing = array(
+			"customer_data"   => $customer_data,
+			"billing_address" => $billing_address
+		);
+
+		ksort($data_billing);
+		return $data_billing;
 	}
 
-	function bold_automatic_redirection( $order_id ): array {
+	function prepare_data_redirection( $order_id ): array {
 		$order = wc_get_order( $order_id );
 
-		$currency           = get_woocommerce_currency();
+		$currency           = $order->get_currency();
 		$auth_token         = $this->get_option_custom( 'test' ) === 'yes' ? esc_attr( $this->get_option_custom( 'test_api_key' ) ) : esc_attr( $this->get_option_custom( 'prod_api_key' ) );
 		$amount_in_cents    = (int) $order->get_total();
 		$order_reference    = $this->get_option_custom( 'test' ) === 'yes' ? $this->test_prefix . '~' . esc_attr( $this->get_option_custom( 'prefix' ) ) . "~" . $order_id : esc_attr( $this->get_option_custom( 'prefix' ) ) . "~" . $order_id;
 		$secret_key         = $this->get_option_custom( 'test' ) === 'yes' ? $this->get_option_custom( 'test_secret_key' ) : $this->get_option_custom( 'prod_secret_key' );
 		$signature          = esc_attr( hash( 'sha256', "{$order_reference}{$amount_in_cents}{$currency}{$secret_key}" ) );
 		$data_billing_order = $this->get_data_billing_order( $order );
-		$origin_url         = $this->get_option_custom( 'origin_url' ) !== '' ? esc_attr( $this->get_option_custom( 'origin_url' ) ) : esc_url( wc_get_checkout_url() );
+		$origin_url         = $this->get_option_custom( 'origin_url' ) !== '' ? esc_attr( $this->get_option_custom( 'origin_url' ) ) : $order->get_cancel_order_url_raw();
 		/* translators: %s the custom short description for payments in checkout processed with Bold */
 		$description		= sprintf(__('Pago de mi pedido #%s', 'bold-pagos-en-linea'), $order_id);
 
@@ -559,37 +567,70 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			$return_url = wc_get_checkout_url() . $return_url;
 		}
 
-
-		return array(
-			'currency'         => $currency,
-			'auth_token'       => $auth_token,
-			'amount_in_cents'  => $amount_in_cents,
-			'order_reference'  => $order_reference,
-			'description'	   => urlencode($description),
-			'signature'        => $signature,
-			'return_url'       => $return_url,
-			'origin_url'       => $origin_url,
-			'script_url'       => 'https://checkout.bold.co/library/boldPaymentButton.js',
-			'integration_type' => 'wordpress-woocommerce-3.0.4',
-			'customer_data'    => urlencode( $data_billing_order['customer_data'] ),
-			'billing_address'  => urlencode( $data_billing_order['billing_address'] ),
+		$data_order_bold = array(
+			'currency'         		=> $currency,
+			'api-key'          		=> $auth_token,
+			'amount'  		   		=> $amount_in_cents,
+			'order-id'  	   		=> $order_reference,
+			'description'	   		=> $description,
+			'integrity-signature'	=> $signature,
+			'redirection-url'  		=> $return_url,
+			'origin-url'       		=> $origin_url,
+			'integration-type' 		=> 'wordpress-woocommerce-3.0.5',
+			'customer-data'    		=> json_encode($data_billing_order['customer_data']) ,
+			'billing-address'  		=> json_encode($data_billing_order['billing_address']),
+			'opening-time'	   		=> microtime(true) * 1e9,
 		);
+
+		ksort($data_order_bold);
+
+		$stock_is_enabled = wc_string_to_bool( get_option( 'woocommerce_manage_stock', 'yes' ) );
+		$held_duration = absint(get_option( 'woocommerce_hold_stock_minutes',0));
+		if($stock_is_enabled && $held_duration>=5){
+			$held_duration = get_option( 'woocommerce_hold_stock_minutes' );
+			$current_nanoseconds = microtime(true) * 1e9;
+			$held_duration_nanoseconds = $held_duration * 60 * 1e9;
+			$expiration_date = $current_nanoseconds + $held_duration_nanoseconds;
+			$data_order_bold['expiration-date'] = number_format($expiration_date, 0, '.', '');
+		}
+
+		$image_url = BoldCommon::getLogoStore();
+		if(!empty($image_url)){
+			$data_order_bold['image-url'] = $image_url;
+		}
+
+		return $data_order_bold;
 	}
 
 	// Función interna para Woocommerce
-	function process_payment( $order_id ): array {
-		if ( $this->get_option_custom( 'test' ) === 'yes' ) {
-			wc_get_order( $order_id )->add_order_note( __( "Esta orden es de prueba", 'bold-pagos-en-linea' ) );
-			update_post_meta( $order_id, '_is_test_order', true );
+	function process_payment( $order_id ) {
+		try {
+			if ( $this->get_option_custom( 'test' ) === 'yes' ) {
+				wc_get_order( $order_id )->add_order_note( __( "Esta orden es de prueba", 'bold-pagos-en-linea' ) );
+				update_post_meta( $order_id, '_is_test_order', true );
+			}
+	
+			$params = $this->prepare_data_redirection( $order_id );
+
+			$data_url_redirect = BoldCommon::generateObfuscatedUrl($params);
+
+			if(empty($data_url_redirect)){
+				throw new \Exception("Empty url redirect checkout");
+			}else{
+				return array(
+					'result'   => 'success',
+					'redirect' => $data_url_redirect
+				);
+			}
+		} catch (\Throwable $th) {
+			$message_error = __('No se logró redireccionar a la pasarela de pagos de Bold', 'bold-pagos-en-linea');
+
+			wc_add_notice( $message_error, 'notice' );
+			wc_get_order( $order_id )->update_status('failed', $message_error );
+
+            BoldCommon::logEvent("Error: " . $th->getMessage() . " in file " . $th->getFile() . " line " . $th->getLine());
+
+			return;
 		}
-
-		$page_url     = plugin_dir_url( __FILE__ ) . '../templates/bold-redirect.html';
-		$params       = $this->bold_automatic_redirection( $order_id );
-		$redirect_url = add_query_arg( $params, $page_url );
-
-		return array(
-			'result'   => 'success',
-			'redirect' => $redirect_url
-		);
 	}
 }

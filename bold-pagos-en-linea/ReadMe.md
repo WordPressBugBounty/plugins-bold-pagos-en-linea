@@ -4,8 +4,8 @@
 - Tags: woocommerce, payment gateway, bold, colombia, ecommerce
 - Requires at least: 5.5.2
 - Requires PHP: 7.4
-- Tested up to: 6.6.2
-- Stable tag: 3.0.4
+- Tested up to: 6.7
+- Stable tag: 3.0.5
 - Network: true
 - License: GPLv3 or later
 - License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -31,6 +31,10 @@ Este plugin establece conexiones externas con Bold para integrar funcionalidades
 - Validación Webhook configurado en panel de comercios
    - URL: https://merchants-cde.api.bold.co/merchants/myself/configurations/webhook
    - Descripción: Esta URL se utiliza para listar los webhooks configurados por el comercio y validar si el actual del wordpress existe en ese listado, generando una alerta en la configuración.
+
+- Generar URL ofuscada para redirigir a pagar en Checkout de Bold
+   - URL: https://online-cde.api.bold.co/ecommerce/proxy/v1/obfuscate
+   - Descripción: Esta URL valida los datos de la compra a realizar y genera una url segura para redirigir al usuario a finalizar la compra de la orden realizada en WordPress con WooCommerce.
 
 Para más información, visita https://bold.co. Conoce nuestros términos y condiciones [aquí](https://bold.co/legal) y nuestro portal de desarrolladores [aquí](https://developers.bold.co).
 
@@ -113,15 +117,15 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Upgrade Notice ==
 
-Última versión 3.0.4
+Última versión 3.0.5
 
 == Changelog ==
 
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
-### 3.0.4
+### 3.0.5
 
-- Validación del webhook configurado antes de poder guardar la configuración de llaves. Se añade proceso de desisntalación para borrar los datos guardados y evitar cache de los mismos.
+- Change in the redirect flow to complete the payment at checkout, improving security and blocking errors.
 
 == Créditos ==
 

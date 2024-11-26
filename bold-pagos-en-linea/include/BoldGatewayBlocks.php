@@ -21,7 +21,7 @@ final class BoldGatewayBlocks extends AbstractPaymentMethodType {
         }
 
 		if (empty($this->settings)) {
-            error_log('La configuración del gateway está vacía.');
+            BoldCommon::logEvent('La configuración del gateway está vacía.');
         }
 
 		// initialize payment gateway
@@ -29,7 +29,7 @@ final class BoldGatewayBlocks extends AbstractPaymentMethodType {
 		$this->gateway = $gateways[ $this->name ];
 
 		if (!$this->gateway) {
-            error_log('Gateway no encontrado.');
+            BoldCommon::logEvent('Gateway no encontrado.');
         }
 	}
 
@@ -49,7 +49,7 @@ final class BoldGatewayBlocks extends AbstractPaymentMethodType {
 				'wp-html-entities',
 				'wp-i18n',
 			],
-			'3.0.4',
+			'3.0.5',
 			true
 		);
 		if ( function_exists( 'wp_set_script_translations' ) ) {

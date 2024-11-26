@@ -8,6 +8,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 use BoldPagosEnLinea\BoldTinyHtmlMinifier;
 
 class BoldConstants {
+    const URL_CHECKOUT = "https://checkout.bold.co";
+
     const COLUMNS_KEYS = array(
         'test',
         'prod_api_key',

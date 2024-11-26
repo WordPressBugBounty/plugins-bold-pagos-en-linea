@@ -1,38 +1,38 @@
-const settings = window.wc.wcSettings.getSetting('bold_co_data', {});
-const label = window.wp.htmlEntities.decodeEntities(settings.title);
-const Content = () => {
+const boldSettings = window.wc.wcSettings.getSetting('bold_co_data', {});
+const boldLabelText = window.wp.htmlEntities.decodeEntities(boldSettings.title);
+const boldContent = () => {
     return window.wp.element.createElement('div', {
-        dangerouslySetInnerHTML: {__html: settings.description}
+        dangerouslySetInnerHTML: {__html: boldSettings.description}
     });
 };
-const Icon = () => {
-    return settings.icon ? window.wp.element.createElement('img', {
-        src: settings.icon,
+const boldIcon = () => {
+    return boldSettings.icon ? window.wp.element.createElement('img', {
+        src: boldSettings.icon,
         style: {float: 'right', marginRight: '20px'},
         alt: 'icon'
     }) : null;
 };
 
-const Label = () => {
+const boldLabel = () => {
     return (
         window.wp.element.createElement('span', {
                 style: {width: '100%'},
             },
-            window.wp.element.createElement(Icon, null),
-            label
+            window.wp.element.createElement(boldIcon, null),
+            boldLabelText
         )
     )
 };
 
-const Block_Gateway = {
+const boldBlockGateway = {
     name: 'bold_co',
-    label: window.wp.element.createElement(Label, null),
-    content: window.wp.element.createElement(Content, null),
-    edit: window.wp.element.createElement(Content, null),
+    label: window.wp.element.createElement(boldLabel, null),
+    content: window.wp.element.createElement(boldContent, null),
+    edit: window.wp.element.createElement(boldContent, null),
     canMakePayment: () => true,
-    ariaLabel: label,
+    ariaLabel: boldLabelText,
     supports: {
-        features: settings.supports,
+        features: boldSettings.supports,
     },
 };
-window.wc.wcBlocksRegistry.registerPaymentMethod(Block_Gateway);
+window.wc.wcBlocksRegistry.registerPaymentMethod(boldBlockGateway);

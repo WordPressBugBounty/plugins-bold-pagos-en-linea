@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.5] - 2024-11-26
+### Changed:
+- Change in the redirect flow to init checkout payment, improving security and blocking errors.
+- Changes process if payment is cancelled, update status order to cancelled.
+
+### Added:
+- Improvement checkout style with logo of store.
+
+### Fix:
+- Minor fix in selection of payment method with incompatibility in other plugin.
+
 ## [3.0.4] - 2024-11-13
 ### Added:
 - Support for translations, added translation for es_CO

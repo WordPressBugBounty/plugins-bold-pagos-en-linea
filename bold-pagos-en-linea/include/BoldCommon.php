@@ -6,8 +6,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use BoldPagosEnLinea\BoldTinyHtmlMinifier;
+use BoldPagosEnLinea\BoldConstants;
 
 class BoldCommon {
+    // Key for obfuscation
+    private static $obfuscationKey = "BoldPaymentButton";
+
+    // Valid character set for obfuscation
+    private static $validCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~=&";
+
+    // Custom delimiter for parameters
+    private static $customDelimiter = "<bold>";
 
     // Obtener el key del campo
     public static function getFieldKey( string $key ): string {
@@ -121,7 +130,7 @@ class BoldCommon {
 
     // Obtener la versión remota del plugin
     public static function getPluginVersionRemote(): string {
-        $version_url    = 'https://checkout.bold.co/plugins/woocommerce/version.txt';
+        $version_url    = BoldConstants::URL_CHECKOUT . '/plugins/woocommerce/version.txt';
         try {
             $remote_version = wp_remote_get( $version_url );
     
@@ -181,5 +190,122 @@ class BoldCommon {
         }
 
         return $size === count( $array );
+    }
+
+    /**
+     * Retrieves the store's logo URL in WooCommerce or the theme's custom logo.
+     *
+     * The function first attempts to get the logo configured in WooCommerce. If none is found,
+     * it then looks for the logo set in the theme via the `custom_logo` option.
+     * Additionally, it validates that the image is in JPG, PNG, or WEBP format; if not,
+     * it returns an empty string.
+     *
+     * @return string The URL of the logo in JPG, PNG, or WEBP format. Returns an empty string if
+     *                no valid logo is found in either location or if the file type is unsupported.
+     */
+    function getLogoStore() {
+        $logo_id = get_option('woocommerce_store_logo');
+
+        if ($logo_id) {
+            $logo_url = wp_get_attachment_url($logo_id);
+        } else {
+            $logo_id = get_theme_mod('custom_logo');
+            $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'medium') : '';
+        }
+
+        if ($logo_url && preg_match('/\.(jpg|jpeg|png|webp)$/i', $logo_url)) {
+            return $logo_url;
+        }
+
+        return '';
+    }
+    
+    /**
+     * Generates the full obfuscated URL with parameters.
+     *
+     * @param array $params Key-value pair of parameters.
+     * @return string The obfuscated URL.
+     */
+    public static function generateObfuscatedUrl(array $params): string
+    {
+        $encodedParams = self::encodeParamsWithDelimiter($params);
+        return BoldConstants::URL_CHECKOUT . "/btn?" . urlencode($encodedParams);
+    }
+
+    /**
+     * Encodes parameters into a string, applies a delimiter, and obfuscates the result.
+     *
+     * @param array $params Key-value pair of parameters.
+     * @return string Obfuscated parameters as a single string.
+     */
+    private static function encodeParamsWithDelimiter(array $params): string
+    {
+        $paramString = self::convertParamsToDelimitedString($params);
+        return self::obfuscateString($paramString);
+    }
+
+    /**
+     * Converts an array of parameters into a delimited string.
+     *
+     * @param array $params Key-value pair of parameters.
+     * @return string Parameters as a string with a custom delimiter.
+     */
+    private static function convertParamsToDelimitedString(array $params): string
+    {
+        $pairs = array_map(function ($key, $value) {
+            return self::toKebabCase($key) . "=" . $value;
+        }, array_keys($params), $params);
+
+        return implode(self::$customDelimiter, $pairs);
+    }
+
+    /**
+     * Converts a string to kebab-case format.
+     *
+     * @param string $input The input string.
+     * @return string The kebab-case formatted string.
+     */
+    private static function toKebabCase(string $input): string
+    {
+        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $input));
+    }
+
+    /**
+     * Obfuscates a string using the obfuscation key and valid character set.
+     *
+     * @param string $input The input string to obfuscate.
+     * @return string The obfuscated string.
+     */
+    private static function obfuscateString(string $input): string
+    {
+        $obfuscated = '';
+        $keyLength = strlen(self::$obfuscationKey);
+        $validCharLength = strlen(self::$validCharacters);
+
+        for ($i = 0, $len = strlen($input); $i < $len; $i++) {
+            $charCode = ord(self::$obfuscationKey[$i % $keyLength]);
+            $obfuscated .= self::shiftCharacter($input[$i], $charCode, $validCharLength);
+        }
+
+        return $obfuscated;
+    }
+
+    /**
+     * Shifts a character based on its index in the valid character set.
+     *
+     * @param string $char The character to shift.
+     * @param int $offset The offset value for the shift.
+     * @param int $setLength The length of the valid character set.
+     * @return string The shifted character.
+     */
+    private static function shiftCharacter(string $char, int $offset, int $setLength): string
+    {
+        $index = strpos(self::$validCharacters, $char);
+        if ($index === false) {
+            return $char; // Return the original character if not in the valid set.
+        }
+
+        $shiftedIndex = ($index + $offset + $setLength) % $setLength;
+        return self::$validCharacters[$shiftedIndex];
     }
 }
