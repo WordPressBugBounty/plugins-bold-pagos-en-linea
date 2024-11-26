@@ -46,7 +46,7 @@ class BoldShortcode
         $originUrl = BoldCommon::getOptionKey('origin_url') !== '' ? "data-origin-url='" . esc_attr(BoldCommon::getOptionKey('origin_url')) . "'" : '';
         $description = isset($attrs["description"]) ? "data-description='" . esc_attr($attrs["description"]) . "'" : '';
         $bold_color_button = isset($attrs["color"]) ? esc_attr($attrs["color"]) : 'dark';
-        $woocommerce_bold_version = "wordpress-shortcode-3.0.5";
+        $woocommerce_bold_version = "wordpress-shortcode-3.0.6";
 
         $tags_enabled = [
             'script' => [

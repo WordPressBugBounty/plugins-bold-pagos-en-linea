@@ -203,7 +203,7 @@ class BoldCommon {
      * @return string The URL of the logo in JPG, PNG, or WEBP format. Returns an empty string if
      *                no valid logo is found in either location or if the file type is unsupported.
      */
-    function getLogoStore() {
+    public static function getLogoStore() {
         $logo_id = get_option('woocommerce_store_logo');
 
         if ($logo_id) {
