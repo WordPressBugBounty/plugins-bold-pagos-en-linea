@@ -5,7 +5,7 @@ Requires at least: 5.5.2
 Tested up to: 6.7
 Requires PHP: 7.4
 Network: true
-Stable tag: 3.0.6
+Stable tag: 3.1.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,8 +30,8 @@ Para más información, visita https://bold.co. Conoce nuestros términos y cond
 
 - Integración con la pasarela de pagos de Bold Colombia.
 - Personalización de la apariencia de los botones de pago.
-- Actualización automática del estado de las órdenes mediante funciones cron.
-- Soporte para la moneda colombiana (COP).
+- Actualización automática del estado de pago de las órdenes.
+- Soporte para la moneda colombiana (COP) y dólares americanos (USD).
 
 == Installation ==
 
@@ -102,4 +102,4 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
 == Upgrade Notice ==
-Última versión 3.0.6
+Última versión 3.1.0

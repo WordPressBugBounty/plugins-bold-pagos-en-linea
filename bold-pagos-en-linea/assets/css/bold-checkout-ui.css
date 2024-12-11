@@ -2,6 +2,19 @@
   box-sizing: border-box;
 }
 
+#bold_co_container_info_checkout_page {
+  background-color: white;
+  border-radius: 8px;
+  width: 100%;
+}
+
+#bold_co_container_info_checkout_page.is_light{
+  background-color: #fff !important;
+  #bold_co_checkout_page{
+    color: #000 !important;
+  }
+}
+
 #bold_co_checkout_page {
   display: flex;
   flex-direction: column;

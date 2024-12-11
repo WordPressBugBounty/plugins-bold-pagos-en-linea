@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2024-12-11
+### Added:
+- Add support for payments in currency USD of store with conversion to COP.
+
+### Fix:
+- Minor fix in style checkout payment options and minor changes in colors.
+- Fix error codes when receive status of payments webhook.
+
 ## [3.0.6] - 2024-11-26
 ### Fix:
 - Minor fix in redirect to checkout.

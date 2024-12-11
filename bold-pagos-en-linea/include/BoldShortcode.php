@@ -40,13 +40,13 @@ class BoldShortcode
 
         $orderReference = "" . time();
         $amount = isset($attrs["amount"]) ? esc_attr($attrs["amount"]) : '0';
-        $currency = "COP";
+        $currency = isset($attrs["currency"]) ? esc_attr($attrs["currency"]) : "COP";
         $signature = esc_attr(hash("sha256", "{$orderReference}{$amount}{$currency}{$secretKey}"));
         $redirectionUrl = isset($attrs["redirectionurl"]) ? "data-redirection-url='" . esc_attr($attrs["redirectionurl"]) . "'" : '';
         $originUrl = BoldCommon::getOptionKey('origin_url') !== '' ? "data-origin-url='" . esc_attr(BoldCommon::getOptionKey('origin_url')) . "'" : '';
         $description = isset($attrs["description"]) ? "data-description='" . esc_attr($attrs["description"]) . "'" : '';
         $bold_color_button = isset($attrs["color"]) ? esc_attr($attrs["color"]) : 'dark';
-        $woocommerce_bold_version = "wordpress-shortcode-3.0.6";
+        $woocommerce_bold_version = "wordpress-shortcode-3.1.0";
 
         $tags_enabled = [
             'script' => [

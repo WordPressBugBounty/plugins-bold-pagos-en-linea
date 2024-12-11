@@ -15,8 +15,8 @@ const boldIcon = () => {
 
 const boldLabel = () => {
     return (
-        window.wp.element.createElement('span', {
-                style: {width: '100%'},
+        window.wp.element.createElement('div', {
+                style: {width: '100%', display: 'inline'},
             },
             window.wp.element.createElement(boldIcon, null),
             boldLabelText

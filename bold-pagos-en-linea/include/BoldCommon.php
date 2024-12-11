@@ -214,7 +214,20 @@ class BoldCommon {
         }
 
         if ($logo_url && preg_match('/\.(jpg|jpeg|png|webp)$/i', $logo_url)) {
-            return $logo_url;
+
+            $parsed_url = parse_url($logo_url);
+
+            function encodeAccentsInPath($path)
+            {
+                return preg_replace_callback('/[^\x20-\x7E]/u', function ($matches) {
+                    return rawurlencode($matches[0]);
+                }, $path);
+            }
+
+            $encoded_path = isset($parsed_url['path']) ? encodeAccentsInPath($parsed_url['path']) : '';
+            $safe_url = $parsed_url['scheme'] . '://' . $parsed_url['host'] . $encoded_path;
+
+            return $safe_url;
         }
 
         return '';

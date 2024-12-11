@@ -40,7 +40,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.0.6', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.1.0', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
 	}
 
@@ -168,22 +168,28 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 		header( 'Content-Type: application/json' );
 		if ( ! isset( $signature ) ) {
-			http_response_code( 400 );
-			echo wp_json_encode( array( 'error' => 'The signature is missing' ) );
-			exit;
+			wp_die(
+				wp_json_encode( array( 'error' => 'The signature is missing' ) ),
+				'The signature is missing',
+				array( 'response' => 400, 'content_type' => 'application/json' )
+			);
 		}
 
 		if ( ! property_exists( $response, 'data' ) ) {
-			http_response_code( 401 );
-			echo wp_json_encode( array( 'error' => 'The data is missing', ) );
-			exit;
+			wp_die(
+				wp_json_encode( array( 'error' => 'The data is missing' ) ),
+				'The data is missing',
+				array( 'response' => 401, 'content_type' => 'application/json' )
+			);
 		}
 
 		$metadata = $response->data->metadata;
 		if ( ! property_exists( $metadata, 'reference' ) ) {
-			http_response_code( 402 );
-			echo wp_json_encode( array( 'error' => "The reference is missing" ) );
-			exit;
+			wp_die(
+				new \WP_Error( $this->id, "The reference is missing" ),
+				402,
+				array( 'response' => 402, 'content_type' => 'application/json' )
+			);
 		}
 
 		$parts    = explode( '~', $metadata->reference );
@@ -196,15 +202,19 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			$valid_prefix        = $parts[0] == $this->get_option_custom( 'prefix' );
 		}
 		if ( ! $valid_prefix ) {
-			http_response_code( 403 );
-			echo wp_json_encode( array( 'error' => "The reference is not from store " . get_bloginfo( 'name' ) . " WooCommerce" ) );
-			exit;
+			wp_die(
+				new \WP_Error( $this->id, "The reference is not from store " . get_bloginfo( 'name' ) . " WooCommerce" ),
+				403,
+				array( 'response' => 403, 'content_type' => 'application/json' )
+			);
 		}
 
 		if ( ! $this->bold_validate_signature( $signature, $request_body, $secret_key_merchant ) ) {
-			http_response_code( 404 );
-			echo wp_json_encode( array( 'error' => 'Bad signature' ) );
-			exit;
+			wp_die(
+				new \WP_Error( $this->id, 'Bad signature' ),
+				404,
+				array( 'response' => 404, 'content_type' => 'application/json' )
+			);
 		}
 
 		$get_response = [
@@ -220,9 +230,11 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			"payment_method"	=> $response->data->payment_method
 		];
 		if ( ! $get_response || array_key_exists( 'errors', $get_response ) ) {
-			http_response_code( 405 );
-			echo wp_json_encode( array( 'error' => "The reference don't found in voucher service" ) );
-			exit;
+			wp_die(
+				new \WP_Error( $this->id, "The reference don't found in voucher service" ),
+				405,
+				array( 'response' => 405, 'content_type' => 'application/json' )
+			);
 		}
 
 		$order = wc_get_order( $order_id );
@@ -245,7 +257,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Monedas soportadas por Bold
 	function bold_get_supported_currency(): array {
-		return [ 'COP' ];
+		return [ 'COP', 'USD' ];
 	}
 
 	// Mensaje en el checkout de WooCommerce cuando no está disponible el método de pago Bold
@@ -431,7 +443,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 		if ( $status != 'pending' ) {
 			/* translators: %1$s type of transaction test/prod. %2$s custom message to note in order. */
-			$message_order_translate = __('%1$s Su orden tiene el estado "%2$s"', 'bold-pagos-en-linea');
+			$message_order_translate = __('%1$s Tu orden tiene el estado "%2$s"', 'bold-pagos-en-linea');
 			$message_order = sprintf(
 				$message_order_translate,
 				esc_attr( $text, 'bold-pagos-en-linea' ),
@@ -502,8 +514,8 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.0.6', 'all' );
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.0.6', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.1.0', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.1.0', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -552,8 +564,14 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		$order = wc_get_order( $order_id );
 
 		$currency           = $order->get_currency();
+
+		if($currency === 'COP'){
+			$amount_in_cents    = number_format(round($order->get_total(), 0), 0, '.', '');
+		}else{
+			$amount_in_cents    = number_format(round($order->get_total(), 2), 2, '.', '');
+		}
+
 		$auth_token         = $this->get_option_custom( 'test' ) === 'yes' ? esc_attr( $this->get_option_custom( 'test_api_key' ) ) : esc_attr( $this->get_option_custom( 'prod_api_key' ) );
-		$amount_in_cents    = (int) $order->get_total();
 		$order_reference    = $this->get_option_custom( 'test' ) === 'yes' ? $this->test_prefix . '~' . esc_attr( $this->get_option_custom( 'prefix' ) ) . "~" . $order_id : esc_attr( $this->get_option_custom( 'prefix' ) ) . "~" . $order_id;
 		$secret_key         = $this->get_option_custom( 'test' ) === 'yes' ? $this->get_option_custom( 'test_secret_key' ) : $this->get_option_custom( 'prod_secret_key' );
 		$signature          = esc_attr( hash( 'sha256', "{$order_reference}{$amount_in_cents}{$currency}{$secret_key}" ) );
@@ -576,7 +594,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'integrity-signature'	=> $signature,
 			'redirection-url'  		=> $return_url,
 			'origin-url'       		=> $origin_url,
-			'integration-type' 		=> 'wordpress-woocommerce-3.0.6',
+			'integration-type' 		=> 'wordpress-woocommerce-3.1.0',
 			'customer-data'    		=> json_encode($data_billing_order['customer_data']) ,
 			'billing-address'  		=> json_encode($data_billing_order['billing_address']),
 			'opening-time'	   		=> microtime(true) * 1e9,
@@ -596,7 +614,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 		$image_url = BoldCommon::getLogoStore();
 		if(!empty($image_url)){
-			$data_order_bold['image-url'] = $image_url;
+			$data_order_bold['image-url'] = esc_url_raw($image_url);
 		}
 
 		return $data_order_bold;
