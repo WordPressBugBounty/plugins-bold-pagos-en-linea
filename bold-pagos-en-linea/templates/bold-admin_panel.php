@@ -6,15 +6,15 @@ if (!defined('ABSPATH')) {
 
 use BoldPagosEnLinea\BoldCommon;
 
-wp_register_script( 'woocommerce_bold_admin_notifications', plugins_url( '/../assets/libraries/awesome-notifications/dist/index.var.js', __FILE__ ), array(), '3.1.0', true );
+wp_register_script( 'woocommerce_bold_admin_notifications', plugins_url( '/../assets/libraries/awesome-notifications/dist/index.var.js', __FILE__ ), array(), '3.1.1', true );
 wp_enqueue_script( 'woocommerce_bold_admin_notifications' );
 wp_register_script( 'woocommerce_bold_admin_panel_js', plugins_url( '/../assets/js/admin-panel.js', __FILE__ ), array(
 	'woocommerce_bold_admin_notifications',
 	'jquery'
-), '3.1.0', true );
+), '3.1.1', true );
 wp_enqueue_script( 'woocommerce_bold_admin_panel_js' );
-wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.1.0', 'all' );
-wp_enqueue_style( 'woocommerce_bold_admin_panel_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_panel_style.css', false, '3.1.0', 'all' );
+wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.1.1', 'all' );
+wp_enqueue_style( 'woocommerce_bold_admin_panel_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_panel_style.css', false, '3.1.1', 'all' );
 
 $prefix                     = BoldCommon::getOptionKey( 'prefix', 'Bold' );
 $testMode                   = BoldCommon::getOptionKey( 'test', 'no' );

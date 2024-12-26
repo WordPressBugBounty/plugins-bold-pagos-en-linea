@@ -1,0 +1,17 @@
+{
+    "name": "bold-pagos-en-linea",
+    "version": "0.1.0",
+    "description": "Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes.",
+    "main": "index.js",
+    "scripts": {
+      "build": "wp-scripts build",
+      "start": "wp-scripts start"
+    },
+    "keywords": [],
+    "author": "Bold",
+    "license": "ISC",
+    "devDependencies": {
+      "@wordpress/scripts": "^30.7.0"
+    }
+  }
+  

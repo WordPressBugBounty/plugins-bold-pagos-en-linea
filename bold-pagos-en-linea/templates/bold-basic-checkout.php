@@ -7,10 +7,11 @@ if (!defined('ABSPATH')) {
 use BoldPagosEnLinea\BoldCommon;
 
 $pluginUrl = plugin_dir_url(__FILE__);
+$logoUrl = plugins_url( '/../assets/img/bold_logo_dark_icon.svg', __FILE__ );
 $test_mode = BoldCommon::getOptionKey('test');
 $is_light = BoldCommon::getOptionKey('logo_is_light');
 
-$checkout_description = __("Te llevaremos a la Pasarela de pagos Bold para completar tu compra con la mejor experiencia, fácil y segura.", 'bold-pagos-en-linea');
+$checkout_description = __("Te llevaremos a la pasarela de pagos Bold para completar tu pago de forma fácil y segura", 'bold-pagos-en-linea');
 $test_mode_text = __("Modo de prueba", 'bold-pagos-en-linea');
 $secure_purchase = __("Compra 100% protegida", 'bold-pagos-en-linea');
 ?>
@@ -23,7 +24,7 @@ $secure_purchase = __("Compra 100% protegida", 'bold-pagos-en-linea');
     <div id="bold_co_container_info_checkout_page">
         <div id="bold_co_checkout_page" class="bold_checkout_element">
             <div id="bold_co_checkout_page_body">
-                <div class="bold_co_checkout_page_body_payments_method" id="bold_co_checkout_page_body_payments_method"></div>
+                <img src="<?php echo esc_url($logoUrl); ?>" alt="Bold"/>
                 <div id="bold_co_checkout_page_body_test_mode">
                 <img src="<?php echo esc_url($pluginUrl); ?>../assets/img/warning.png" alt="<?php echo esc_attr($test_mode_text); ?>" />
                 <?php echo esc_attr($test_mode_text); ?>

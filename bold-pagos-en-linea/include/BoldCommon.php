@@ -217,20 +217,20 @@ class BoldCommon {
 
             $parsed_url = parse_url($logo_url);
 
-            function encodeAccentsInPath($path)
-            {
-                return preg_replace_callback('/[^\x20-\x7E]/u', function ($matches) {
-                    return rawurlencode($matches[0]);
-                }, $path);
-            }
-
-            $encoded_path = isset($parsed_url['path']) ? encodeAccentsInPath($parsed_url['path']) : '';
+            $encoded_path = isset($parsed_url['path']) ? self::encodeAccentsInPath($parsed_url['path']) : '';
             $safe_url = $parsed_url['scheme'] . '://' . $parsed_url['host'] . $encoded_path;
 
             return $safe_url;
         }
 
         return '';
+    }
+
+    private function encodeAccentsInPath($path)
+    {
+        return preg_replace_callback('/[^\x20-\x7E]/u', function ($matches) {
+            return rawurlencode($matches[0]);
+        }, $path);
     }
     
     /**
@@ -320,5 +320,61 @@ class BoldCommon {
 
         $shiftedIndex = ($index + $offset + $setLength) % $setLength;
         return self::$validCharacters[$shiftedIndex];
+    }
+
+    public function getButtonScript(
+        $apiKey,
+        $amount = 0,
+        $currency = 'COP',
+        $orderReference,
+        $signature,
+        $description = null,
+        $redirectionUrl = null,
+        $bold_color_button = 'dark',
+        $woocommerce_bold_version,
+        $size = 'L'
+        ) : string
+    {
+        $tags_enabled = [
+            'script' => [
+                'integrity' => [],
+                'data-bold-button' => [],
+                'data-order-id' => [],
+                'data-amount' => [],
+                'data-currency' => [],
+                'data-api-key' => [],
+                'data-integrity-signature' => [],
+                'data-redirection-url' => [],
+                'data-description' => [],
+                'data-origin-url' => [],
+                'data-integration-type' => [],
+                'data-render-mode' => [],
+                'data-image-url' => [],
+            ]
+        ];
+        $redirectionUrl = $redirectionUrl ? "data-redirection-url='" . esc_attr($redirectionUrl) . "'" : '';
+        $description = $description ? "data-description='" . esc_attr($description) . "'" : '';
+        $originUrl = self::getOptionKey('origin_url') !== '' ? "data-origin-url='" . esc_attr(self::getOptionKey('origin_url')) . "'" : '';
+        $integrity_script = base64_encode(hash('sha384', $orderReference, true));
+        $image_url = self::getLogoStore();
+        $image_url_formated = !empty($image_url) ? "data-image-url='" . esc_attr($image_url) . "'" : '';
+        
+        return wp_kses("
+            <script integrity='sha384-$integrity_script'
+                data-bold-button='$bold_color_button-$size'
+                data-order-id='$orderReference'
+                data-amount='$amount'
+                data-currency='$currency'
+                data-api-key='$apiKey'
+                data-integrity-signature='$signature'
+                $redirectionUrl
+                $description
+                $originUrl
+                $image_url_formated
+                data-integration-type='$woocommerce_bold_version'
+                data-render-mode='embedded'
+            >/**$orderReference**/
+            </script>",
+            $tags_enabled);
     }
 }

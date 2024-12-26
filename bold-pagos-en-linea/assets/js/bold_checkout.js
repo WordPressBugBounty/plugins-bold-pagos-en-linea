@@ -6,11 +6,26 @@ const boldContent = () => {
     });
 };
 const boldIcon = () => {
-    return boldSettings.icon ? window.wp.element.createElement('img', {
-        src: boldSettings.icon,
-        style: {float: 'right', marginRight: '20px'},
-        alt: 'icon'
-    }) : null;
+    const isLight = boldSettings.icon.indexOf('light') !== -1;
+    const script = document.createElement('script');
+    script.src = 'https://bold.co/library/ui-kit.js?hideLogo&type=slider&target=bold-icon-checkout'+((isLight)?'&theme=dark':'');
+    script.async = true;
+    script.onerror = () => {
+        const BoldImage = document.createElement('img');
+        BoldImage.src = boldSettings.icon;
+        BoldImage.style.float = 'right';
+        BoldImage.style.marginRight = '20px';
+        BoldImage.alt = 'icon';
+    
+        const container = document.getElementById('bold-icon-checkout');
+        container.innerHTML = '';
+        container.appendChild(BoldImage);
+    };
+    document.body.appendChild(script);
+
+    return boldSettings.icon ? 
+        window.wp.element.createElement('div', {id: 'bold-icon-checkout', style: {float: 'right', marginRight: '20px', maxWidth: '40%'}}
+        ) : null;
 };
 
 const boldLabel = () => {

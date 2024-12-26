@@ -74,44 +74,9 @@ class BoldCheckoutElement extends HTMLElement {
       containerBackgroundElement.classList.remove("is_light");
     }
 
-    const iconsUrl = `${pluginUrl}../assets/img/payments-method/`;
-    const icons = this.getIcons(iconsUrl, false);
-    const iconsHTML = icons.map(iconUrl => {
-      const altIcon = iconUrl.replace(iconsUrl, '').split('.')[0];
-      return `<img src="${iconUrl}" alt="${altIcon}" />`;
-    }).join("");
-
-    const iconsElement = doc.getElementById("bold_co_checkout_page_body_payments_method");
-    iconsElement.innerHTML = iconsHTML;
-
     processedTemplate = doc.body.innerHTML;
 
     return processedTemplate;
-  }
-
-  getIcons(iconsUrl, isLight) {
-    const iconsDefault = [
-      `${iconsUrl}amex.png`,
-      `${iconsUrl}diners.png`,
-      `${iconsUrl}discover.png`,
-    ];
-    return isLight
-      ? [
-          `${iconsUrl}pse_light.png`,
-          `${iconsUrl}visa_light.png`,
-          `${iconsUrl}mastercard_light.png`,
-          ...iconsDefault,
-          `${iconsUrl}bancolombia_light.png`,
-          `${iconsUrl}nequi_light.png`,
-        ]
-      : [
-          `${iconsUrl}pse.png`,
-          `${iconsUrl}visa.png`,
-          `${iconsUrl}mastercard.png`,
-          ...iconsDefault,
-          `${iconsUrl}bancolombia.png`,
-          `${iconsUrl}nequi.png`,
-        ];
   }
 }
 

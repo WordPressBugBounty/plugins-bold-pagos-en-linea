@@ -38,45 +38,28 @@ class BoldShortcode
             return '<h6>' . esc_html__('Por favor verifica la configuración.', 'bold-pagos-en-linea') . '</h6>';
         }
 
-        $orderReference = "" . time();
+        $orderReference = "WP-SC-" . sprintf('%.0f', microtime(true) * 1e9);
         $amount = isset($attrs["amount"]) ? esc_attr($attrs["amount"]) : '0';
         $currency = isset($attrs["currency"]) ? esc_attr($attrs["currency"]) : "COP";
         $signature = esc_attr(hash("sha256", "{$orderReference}{$amount}{$currency}{$secretKey}"));
-        $redirectionUrl = isset($attrs["redirectionurl"]) ? "data-redirection-url='" . esc_attr($attrs["redirectionurl"]) . "'" : '';
-        $originUrl = BoldCommon::getOptionKey('origin_url') !== '' ? "data-origin-url='" . esc_attr(BoldCommon::getOptionKey('origin_url')) . "'" : '';
-        $description = isset($attrs["description"]) ? "data-description='" . esc_attr($attrs["description"]) . "'" : '';
-        $bold_color_button = isset($attrs["color"]) ? esc_attr($attrs["color"]) : 'dark';
-        $woocommerce_bold_version = "wordpress-shortcode-3.1.0";
+        $redirectionUrl = isset($attrs["redirectionurl"]) ? esc_attr($attrs["redirectionurl"]) : '';
+        $description = isset($attrs["description"]) ? esc_attr($attrs["description"]) : '';
+        $style_parts = isset($attrs["color"]) ? explode('-', esc_attr($attrs["color"])) : ['dark', 'L'];
+        $color_button = $style_parts[0];
+        $size_button = isset($style_parts[1]) ? esc_attr($style_parts[1]) : 'L';
+        $woocommerce_bold_version = "wordpress-shortcode-3.1.1";
 
-        $tags_enabled = [
-            'script' => [
-                'data-bold-button' => [],
-                'data-order-id' => [],
-                'data-amount' => [],
-                'data-currency' => [],
-                'data-api-key' => [],
-                'data-integrity-signature' => [],
-                'data-redirection-url' => [],
-                'data-description' => [],
-                'data-origin-url' => [],
-                'data-integration-type' => [],
-            ]
-        ];
-
-        return wp_kses("
-            <script
-                data-bold-button='$bold_color_button'
-                data-order-id='$orderReference'
-                data-amount='$amount'
-                data-currency='$currency'
-                data-api-key='$apiKey'
-                data-integrity-signature='$signature'
-                $redirectionUrl
-                $description
-                $originUrl
-                data-integration-type='$woocommerce_bold_version'
-            >
-            </script>",
-            $tags_enabled);
+        return BoldCommon::getButtonScript(
+            $apiKey,
+            $amount,
+            $currency,
+            $orderReference,
+            $signature,
+            $description,
+            $redirectionUrl,
+            $color_button,
+            $woocommerce_bold_version,
+            $size_button
+        );
     }
 }

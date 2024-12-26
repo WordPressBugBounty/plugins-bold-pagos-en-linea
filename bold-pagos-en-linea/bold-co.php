@@ -3,7 +3,7 @@
  * Plugin Name: Bold pagos en linea 
  * Plugin URI: https://developers.bold.co/pagos-en-linea/boton-de-pagos/plugins/wordpress
  * Description: Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes.
- * Version: 3.1.0
+ * Version: 3.1.1
  * Author: Bold
  * Author URI: http://www.bold.co/
  * Network: true
@@ -60,7 +60,7 @@ use BoldPagosEnLinea\BoldConstants;
 
 // Función para registrar y cargar el script de botón de pago
 function bold_co_custom_header_code(): void {
-    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.0', true);
+    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.1', true);
     wp_enqueue_script('woocommerce_bold_payment_button_js');
 }
 
@@ -101,12 +101,20 @@ function bold_co_payment_gateway_woocommerce(): void {
     // Añadir enlaces rápidos en secion metadata a la pantalla de plugins
 	add_filter( 'plugin_row_meta', 'bold_add_5_star_review_link', 10, 2 );
 
+    // Añadir categoria personalizada para elementos de bloque
+    add_filter('block_categories_all', 'bold_register_custom_category', 10, 2);
+
     // Cargar traducciones
     load_plugin_textdomain( 'bold-pagos-en-linea', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
     
     // Iniciar BoldShortcode
     if (class_exists('BoldPagosEnLinea\BoldShortcode')) {
         new \BoldPagosEnLinea\BoldShortcode();
+    }
+
+    // Iniciar BoldButtonBlock
+    if (class_exists('BoldPagosEnLinea\BoldButtonBlock')) {
+        new \BoldPagosEnLinea\BoldButtonBlock();
     }
     
     // Cargar el menú de administración
@@ -119,6 +127,20 @@ function bold_co_payment_gateway_woocommerce(): void {
         $bold_woo = new \BoldPagosEnLinea\BoldWoo();
         $bold_woo->init();
     }
+}
+
+// Custom category for elements of Bold
+function bold_register_custom_category($categories) {
+    return array_merge(
+        $categories,
+        [
+            [
+                'slug'  => 'bold-category',
+                'title' => __('Bold pagos en línea', 'bold-pagos-en-linea'),
+                'icon'  => 'boldicon',
+            ],
+        ]
+    );
 }
 
 // Hook para cargar el plugin después de que todos los plugins hayan sido cargados

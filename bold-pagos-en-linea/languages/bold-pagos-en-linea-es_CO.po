@@ -3,7 +3,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Bold pagos en linea  3.1.0\n"
+"Project-Id-Version: Bold pagos en linea  3.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bold-pagos-en-linea\n"
 "POT-Creation-Date: 2024-11-06 16:56-0500\n"
 "PO-Revision-Date: 2024-11-06 17:48-0500\n"
@@ -61,6 +61,26 @@ msgstr "Califica Bold pagos en linea en WordPress.org"
 msgid "Tus llaves de identidad y secreta son inválidas, revisa la información."
 msgstr "Tus llaves de identidad y secreta son inválidas, revisa la información."
 
+#: include/BoldConstants.php:14
+msgid "APPROVED"
+msgstr "APROBADA"
+
+#: include/BoldConstants.php:15
+msgid "REJECTED"
+msgstr "RECHAZADA"
+
+#: include/BoldConstants.php:16
+msgid "PENDING"
+msgstr "PENDIENTE"
+
+#: include/BoldConstants.php:17
+msgid "FAILED"
+msgstr "FALLIDA"
+
+#: include/BoldConstants.php:18
+msgid "PROCESSING"
+msgstr "PROCESANDO"
+
 #: include/BoldMenuAdmin.php:60
 msgid "Actualizaste tus órdenes."
 msgstr "Actualizaste tus órdenes."
@@ -94,8 +114,8 @@ msgid "Integración de la pasarela de pagos Bold con WooCommerce."
 msgstr "Integración de la pasarela de pagos Bold con WooCommerce."
 
 #: include/BoldPaymentGatewayWoo.php:29
-msgid "Bold pagos en línea "
-msgstr "Bold pagos en línea "
+msgid "Paga en línea con Bold "
+msgstr "Paga en línea con Bold "
 
 #. translators: %1$s addon message if is sanbox
 #: include/BoldPaymentGatewayWoo.php:120
@@ -150,8 +170,8 @@ msgstr "Aún no confirmamos el estado de tu pago. Espera unos segundos y recarga
 
 #. translators: %1$s type of transaction test/prod. %2$s custom message to note in order. %3$s the status of transaction received from Bold
 #: include/BoldPaymentGatewayWoo.php:449
-msgid "<b>%1$s</b>%2$s El estado de su transacción es: <b>\"%3$s\"</b>"
-msgstr "<b>%1$s</b>%2$s El estado de su transacción es: <b>\"%3$s\"</b>"
+msgid "<b>%1$s</b>%2$s El estado de tu transacción es: <b>\"%3$s\"</b>"
+msgstr "<b>%1$s</b>%2$s El estado de tu transacción es: <b>\"%3$s\"</b>"
 
 #. translators: %s the custom short description for payments in checkout processed with Bold
 #: include/BoldPaymentGatewayWoo.php:555
@@ -485,12 +505,8 @@ msgstr ""
 "        pagos con Bold."
 
 #: templates/bold-basic-checkout.php:12
-msgid "Te llevaremos a la Pasarela de pagos Bold para completar tu compra con la mejor experiencia, fácil y segura."
-msgstr "Te llevaremos a la Pasarela de pagos Bold para completar tu compra con la mejor experiencia, fácil y segura."
-
-#: templates/bold-basic-checkout.php:13
-msgid "Modo de prueba"
-msgstr "Modo de prueba"
+msgid "Te llevaremos a la pasarela de pagos Bold para completar tu pago de forma fácil y segura"
+msgstr "Te llevaremos a la pasarela de pagos Bold para completar tu pago de forma fácil y segura"
 
 #: templates/bold-basic-checkout.php:14
 msgid "Compra 100% protegida"

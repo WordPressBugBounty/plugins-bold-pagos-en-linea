@@ -5,9 +5,28 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-use BoldPagosEnLinea\BoldTinyHtmlMinifier;
-
 class BoldConstants {
+    
+    private $TRANSACTION_STATUS;
+
+    public function __construct() {
+        $this->TRANSACTION_STATUS = [
+            'APPROVED' => __('APPROVED', 'bold-pagos-en-linea'),
+            'REJECTED' => __('REJECTED', 'bold-pagos-en-linea'),
+            'PENDING' => __('PENDING', 'bold-pagos-en-linea'),
+            'FAILED' => __('FAILED', 'bold-pagos-en-linea'),
+            'PROCESSING' => __('PROCESSING', 'bold-pagos-en-linea'),
+        ];
+    }
+
+    public function getTransactionStatus(string $status): string {
+        $status_uppercase = strtoupper($status);
+        if(iset($this->TRANSACTION_STATUS[$status_uppercase]))
+            return $this->TRANSACTION_STATUS[$status_uppercase];
+        else
+            return $status;
+    }
+
     const URL_CHECKOUT = "https://checkout.bold.co";
 
     const COLUMNS_KEYS = array(

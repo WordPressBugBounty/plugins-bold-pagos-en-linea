@@ -17,7 +17,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	public function __construct() {
 		$this->id                 = 'bold_co';
 		$this->method_title       = __( 'Bold', 'bold-pagos-en-linea' );
-		$this->order_button_text  = __( 'Paga con Bold', 'bold-pagos-en-linea' );
+		$this->order_button_text  = __( 'Paga en línea con Bold', 'bold-pagos-en-linea' );
 		$this->method_description = __( 'Integración de la pasarela de pagos Bold con WooCommerce.', 'bold-pagos-en-linea' );
 		$this->test_prefix        = "test";
 		$this->has_fields         = true;
@@ -26,7 +26,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		$this->init_settings();
 
 		$this->description = $this->bold_upload_checkout_description();
-		$this->title       = __( 'Bold pagos en línea ', 'bold-pagos-en-linea' );
+		$this->title       = __( 'Paga en línea con Bold ', 'bold-pagos-en-linea' );
 		$this->bold_upload_icon();
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array(
@@ -40,7 +40,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.1.0', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.1.1', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
 	}
 
@@ -249,7 +249,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	// Cargar la imagen de bold
 	function bold_upload_icon(): void {
 		if ( $this->get_option_custom( 'logo_is_light' ) === "yes" ) {
-			$this->icon = apply_filters( 'woocommerce_bold_co_icon', plugins_url( '/../assets/img/bold_logo_light_icon.svg', __FILE__ ) );
+			$this->icon = apply_filters( 'woocommerce_bold_co_icon', plugins_url( '/../assets/img/bold_logo_light_icon.svg?light', __FILE__ ) );
 		} else {
 			$this->icon = apply_filters( 'woocommerce_bold_co_icon', plugins_url( '/../assets/img/bold_logo_dark_icon.svg', __FILE__ ) );
 		}
@@ -458,12 +458,12 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			return '<div class="woocommerce-info">'.__('Aún no confirmamos el estado de tu pago. Espera unos segundos y recarga la página nuevamente.', 'bold-pagos-en-linea').'</div>';
 		}
 		/* translators: %1$s type of transaction test/prod. %2$s custom message to note in order. %3$s the status of transaction received from Bold */
-		$message_transaction_status_translate = __('<b>%1$s</b>%2$s El estado de su transacción es: <b>"%3$s"</b>', 'bold-pagos-en-linea');
+		$message_transaction_status_translate = __('<b>%1$s</b>%2$s El estado de tu transacción es: <b>"%3$s"</b>', 'bold-pagos-en-linea');
 		$message_transaction_status = sprintf(
 			$message_transaction_status_translate,
 			esc_html($test_message),
 			esc_html( $text, 'bold-pagos-en-linea' ),
-			esc_html( $get_response, 'bold-pagos-en-linea' )
+			esc_html( BoldConstants::getTransactionStatus($get_response), 'bold-pagos-en-linea' )
 		);
 		return $message_transaction_status;
 	}
@@ -514,8 +514,8 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.1.0', 'all' );
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.1.0', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.1.1', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.1.1', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -594,10 +594,10 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'integrity-signature'	=> $signature,
 			'redirection-url'  		=> $return_url,
 			'origin-url'       		=> $origin_url,
-			'integration-type' 		=> 'wordpress-woocommerce-3.1.0',
+			'integration-type' 		=> 'wordpress-woocommerce-3.1.1',
 			'customer-data'    		=> json_encode($data_billing_order['customer_data']) ,
 			'billing-address'  		=> json_encode($data_billing_order['billing_address']),
-			'opening-time'	   		=> microtime(true) * 1e9,
+			'opening-time'	   		=> (int) (microtime(true) * 1000000),
 		);
 
 		ksort($data_order_bold);

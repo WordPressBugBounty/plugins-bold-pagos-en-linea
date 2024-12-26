@@ -1,0 +1,29 @@
+.bold-button-preview {
+    height: 48px;
+    width: 200px;
+    border-radius: 4px;
+    cursor: pointer;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    &.size-M{
+        height: 40px !important;
+    }
+    &.size-S{
+        height: 32px !important;
+    }
+}
+
+.dashicons-boldicon, .block-editor-block-categories__item[data-category="bold-category"] .block-editor-block-categories__item-icon {
+    background-image: url('./../../../assets/img/bold-icon.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 24px;
+    height: 24px;
+}
+
+.bold-invalid-input {
+    border: 1px solid red;
+    background-color: #fdd;
+}
