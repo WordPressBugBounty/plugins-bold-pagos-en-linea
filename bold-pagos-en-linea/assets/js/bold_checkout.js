@@ -8,7 +8,7 @@ const boldContent = () => {
 const boldIcon = () => {
     const isLight = boldSettings.icon.indexOf('light') !== -1;
     const script = document.createElement('script');
-    script.src = 'https://bold.co/library/ui-kit.js?hideLogo&type=slider&target=bold-icon-checkout'+((isLight)?'&theme=dark':'');
+    script.src = 'https://checkout.bold.co/library/ui-kit.js?hideLogo&type=slider&target=bold-icon-checkout'+((isLight)?'&theme=dark':'');
     script.async = true;
     script.onerror = () => {
         const BoldImage = document.createElement('img');

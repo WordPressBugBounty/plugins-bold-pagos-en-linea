@@ -226,7 +226,7 @@ class BoldCommon {
         return '';
     }
 
-    private function encodeAccentsInPath($path)
+    private static function encodeAccentsInPath($path)
     {
         return preg_replace_callback('/[^\x20-\x7E]/u', function ($matches) {
             return rawurlencode($matches[0]);
@@ -322,7 +322,7 @@ class BoldCommon {
         return self::$validCharacters[$shiftedIndex];
     }
 
-    public function getButtonScript(
+    public static function getButtonScript(
         $apiKey,
         $amount = 0,
         $currency = 'COP',
