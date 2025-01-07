@@ -7,24 +7,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BoldConstants {
     
-    private $TRANSACTION_STATUS;
+    private static $TRANSACTION_STATUS = [
+        'APPROVED' => 'APPROVED',
+        'REJECTED' => 'REJECTED',
+        'PENDING' => 'PENDING',
+        'FAILED' => 'FAILED',
+        'PROCESSING' => 'PROCESSING',
+    ];
 
-    public function __construct() {
-        $this->TRANSACTION_STATUS = [
-            'APPROVED' => __('APPROVED', 'bold-pagos-en-linea'),
-            'REJECTED' => __('REJECTED', 'bold-pagos-en-linea'),
-            'PENDING' => __('PENDING', 'bold-pagos-en-linea'),
-            'FAILED' => __('FAILED', 'bold-pagos-en-linea'),
-            'PROCESSING' => __('PROCESSING', 'bold-pagos-en-linea'),
-        ];
-    }
-
-    public function getTransactionStatus(string $status): string {
+    public static function getTransactionStatus(string $status): string {
         $status_uppercase = strtoupper($status);
-        if(iset($this->TRANSACTION_STATUS[$status_uppercase]))
-            return $this->TRANSACTION_STATUS[$status_uppercase];
-        else
+        if (isset(self::$TRANSACTION_STATUS[$status_uppercase])) {
+            return __(self::$TRANSACTION_STATUS[$status_uppercase], 'bold-pagos-en-linea');
+        } else {
             return $status;
+        }
     }
 
     const URL_CHECKOUT = "https://checkout.bold.co";

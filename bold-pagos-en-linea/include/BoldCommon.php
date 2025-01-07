@@ -215,7 +215,7 @@ class BoldCommon {
 
         if ($logo_url && preg_match('/\.(jpg|jpeg|png|webp)$/i', $logo_url)) {
 
-            $parsed_url = parse_url($logo_url);
+            $parsed_url = wp_parse_url($logo_url);
 
             $encoded_path = isset($parsed_url['path']) ? self::encodeAccentsInPath($parsed_url['path']) : '';
             $safe_url = $parsed_url['scheme'] . '://' . $parsed_url['host'] . $encoded_path;
