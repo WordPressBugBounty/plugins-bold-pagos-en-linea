@@ -10,3 +10,12 @@
     letter-spacing: 0em;
     text-align: left;
 }
+
+label[for="payment_method_bold_co"]{
+    display: inline-flex !important;
+    img{
+      float: right;
+      margin-right: 20px;
+      margin-left: 20px;
+    }
+}

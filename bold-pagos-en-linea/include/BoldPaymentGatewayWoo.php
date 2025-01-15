@@ -40,8 +40,10 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.1.3', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.1.4', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
+		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), array(), '3.1.4', true );
+		wp_enqueue_script( 'woocommerce_bold_checkout_basic_js' );
 	}
 
 	public function bold_upload_checkout_description(): string {
@@ -514,8 +516,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_admin_notifications_css', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/style.css', false, '3.1.3', 'all' );
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.1.3', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.1.4', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -594,7 +595,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'integrity-signature'	=> $signature,
 			'redirection-url'  		=> $return_url,
 			'origin-url'       		=> $origin_url,
-			'integration-type' 		=> 'wordpress-woocommerce-3.1.3',
+			'integration-type' 		=> 'wordpress-woocommerce-3.1.4',
 			'customer-data'    		=> wp_json_encode($data_billing_order['customer_data']) ,
 			'billing-address'  		=> wp_json_encode($data_billing_order['billing_address']),
 			'opening-time'	   		=> (int) (microtime(true) * 1000000),
@@ -612,7 +613,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			$data_order_bold['expiration-date'] = number_format($expiration_date, 0, '.', '');
 		}
 
-		$image_url = BoldCommon::getLogoStore();
+		$image_url = $this->getImageForCheckout( $order );
 		if(!empty($image_url)){
 			$data_order_bold['image-url'] = esc_url_raw($image_url);
 		}
@@ -649,6 +650,24 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
             BoldCommon::logEvent("Error: " . $th->getMessage() . " in file " . $th->getFile() . " line " . $th->getLine());
 
 			return;
+		}
+	}
+
+	private function getImageForCheckout( $order )
+	{
+		$image_store = BoldCommon::getLogoStore();
+		$order_items = $order->get_items();
+		if(count($order_items)==1){
+			$item = reset($order_items);
+			$product = $item->get_product();
+			$product_image = wp_get_attachment_image_src( $product->get_image_id(), 'full' );
+			if($product_image){
+				return BoldCommon::getValidatedImage($product_image[0]);
+			}else{
+				return $image_store;
+			}
+		}else{
+			return $image_store;
 		}
 	}
 }

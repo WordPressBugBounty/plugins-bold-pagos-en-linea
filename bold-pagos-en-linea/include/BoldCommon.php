@@ -213,17 +213,22 @@ class BoldCommon {
             $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'medium') : '';
         }
 
-        if ($logo_url && preg_match('/\.(jpg|jpeg|png|webp)$/i', $logo_url)) {
+        return self::getValidatedImage($logo_url);
+    }
 
-            $parsed_url = wp_parse_url($logo_url);
+    public static function getValidatedImage($image)
+    {
+        if ($image && preg_match('/\.(jpg|jpeg|png|webp)$/i', $image)) {
+
+            $parsed_url = wp_parse_url($image);
 
             $encoded_path = isset($parsed_url['path']) ? self::encodeAccentsInPath($parsed_url['path']) : '';
             $safe_url = $parsed_url['scheme'] . '://' . $parsed_url['host'] . $encoded_path;
 
             return $safe_url;
+        }else{
+            return '';
         }
-
-        return '';
     }
 
     private static function encodeAccentsInPath($path)
@@ -322,16 +327,31 @@ class BoldCommon {
         return self::$validCharacters[$shiftedIndex];
     }
 
+    /**
+     * Generates the HTML script for embedding the Bold payment button.
+     *
+     * @param string $apiKey The API key. Required.
+     * @param float $amount The transaction amount. Optional. Default is 0.
+     * @param string $currency The transaction currency. Optional. Default is 'COP'.
+     * @param string $orderReference The order reference. Optional. Default is an empty string.
+     * @param string $signature The transaction signature. Optional. Default is an empty string.
+     * @param string|null $description The order description. Optional. Default is null.
+     * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
+     * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.1.4'.
+     * @param string $size The button size. Optional. Default is 'L'.
+     * @return string The HTML script for the payment button.
+     */
     public static function getButtonScript(
         $apiKey,
         $amount = 0,
         $currency = 'COP',
-        $orderReference,
-        $signature,
+        $orderReference = '',
+        $signature = '',
         $description = null,
         $redirectionUrl = null,
         $bold_color_button = 'dark',
-        $woocommerce_bold_version,
+        $woocommerce_bold_version = 'wordpress-3.1.4',
         $size = 'L'
         ) : string
     {

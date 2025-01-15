@@ -75,7 +75,7 @@ registerBlockType('bold/button-block', {
                             label={__('URL a la que redirigir al cliente tras finalizar una transacción', 'bold-pagos-en-linea')}
                             value={redirectionUrl}
                             onChange={ handleUrlChange }
-                            help={__('Opcional', 'bold-pagos-en-linea')+'. '+__('Debe ser una URL válida que comience con https://')}
+                            help={__('Opcional', 'bold-pagos-en-linea')+'. '+__('Debe ser una URL válida que comience con https://', 'bold-pagos-en-linea')}
                             pattern="https://.+|http://localhost(/.*)?"
                             className={urlValid ? '' : 'bold-invalid-input'}
                         />

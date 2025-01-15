@@ -33,17 +33,14 @@ class BoldWoo {
 	}
 
 	// Cargar scripts de JS para la pasarela de pagos
-	public function load_scripts_js() {
-		wp_register_script( 'woocommerce_bold_admin_notifications', plugin_dir_url( __FILE__ ) . '../assets/libraries/awesome-notifications/dist/index.var.js', [], '3.1.3', true );
-		wp_enqueue_script( 'woocommerce_bold_admin_notifications' );
-	
-		wp_register_script( 'woocommerce_bold_gateway_js', plugin_dir_url( __FILE__ ) . '../assets/js/admin-index.js', [ 'jquery', 'woocommerce_bold_admin_notifications' ], '3.1.3', true );
+	public function load_scripts_js() {	
+		wp_register_script( 'woocommerce_bold_gateway_js', plugin_dir_url( __FILE__ ) . '../assets/js/admin-index.js', [ 'jquery', 'bold-assets-js' ], '3.1.4', true );
 		wp_enqueue_script( 'woocommerce_bold_gateway_js' );
 	}
 
 	// Cargar estilos CSS para la pasarela de pagos
 	public function load_scripts_css() {
-		wp_enqueue_style( 'woocommerce_bold_gateway_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_woocommerce_styles.css', false, '3.1.3', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_woocommerce_styles.css', false, '3.1.4', 'all' );
 	}
 
 	// Crear todos los hooks relacionados con WooCommerce

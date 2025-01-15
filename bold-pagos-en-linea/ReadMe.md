@@ -5,7 +5,7 @@
 - Requires at least: 5.5.2
 - Requires PHP: 7.4
 - Tested up to: 6.7
-- Stable tag: 3.1.3
+- Stable tag: 3.1.4
 - Network: true
 - License: GPLv3 or later
 - License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -40,7 +40,7 @@ Para más información, visita https://bold.co. Conoce nuestros términos y cond
 
 ### Bibliotecas
 - [BoldCheckout](https://developers.bold.co/pagos-en-linea/boton-de-pagos/integracion-manual/integracion-personalizada): Usamos nuestra librería ligera de JavaScript para generar el botón de pagos personalizado y también para redirigir al pago desde la pasarela de pagos.
-- [Awesome Notifications](https://github.com/f3oall/awesome-notifications): Usamos esta librería de notificaciones ligera para mostrar mensajes al usuario.
+- [sweetalert2](https://sweetalert2.github.io/): Usamos esta librería de notificaciones ligera para mostrar mensajes al usuario.
 
 ### Características Destacadas
 
@@ -117,13 +117,13 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Upgrade Notice ==
 
-Última versión 3.1.3
+Última versión 3.1.4
 
 == Changelog ==
 
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
-### 3.1.3
+### 3.1.4
 
 - Change in the redirect flow to complete the payment at checkout, improving security and blocking errors.
 

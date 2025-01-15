@@ -1,0 +1,20 @@
+.boldicon{
+    background-image: url('../img/bold-icon.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 13px;
+    height: 13px;
+}
+
+.elementor-element>.icon>.boldicon{
+    width: 28px;
+    height: 24px;
+    display: inline-block;
+}
+
+.bold-css-input input:not([type="radio"]):not([type="checkbox"]),
+.bold-css-input select,
+.bold-css-input textarea {
+    width: 100%;
+}

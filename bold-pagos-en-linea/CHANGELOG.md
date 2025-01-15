@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.4] - 2025-01-15
+### Added:
+- Add Bold payment button in widgets of editor with Elementor.
+
+### Changed:
+- Change design in selection of image if is only one product show your image in checkout.
+
+### Security:
+- Change and update library with security warnings.
+
 ## [3.1.3] - 2025-01-07
 ### Fix:
 - Fixed error show message translate in received order

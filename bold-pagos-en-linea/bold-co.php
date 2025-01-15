@@ -3,7 +3,7 @@
  * Plugin Name: Bold pagos en linea 
  * Plugin URI: https://developers.bold.co/pagos-en-linea/boton-de-pagos/plugins/wordpress
  * Description: Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes.
- * Version: 3.1.3
+ * Version: 3.1.4
  * Author: Bold
  * Author URI: http://www.bold.co/
  * Network: true
@@ -60,8 +60,30 @@ use BoldPagosEnLinea\BoldConstants;
 
 // Función para registrar y cargar el script de botón de pago
 function bold_co_custom_header_code(): void {
-    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.3', true);
+    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.4', true);
     wp_enqueue_script('woocommerce_bold_payment_button_js');
+
+    wp_register_script(
+        'bold-assets-js',
+        plugin_dir_url(__FILE__) . './build/index.js',
+        array('wp-blocks', 'wp-editor', 'wp-components', 'wp-element'),
+        filemtime(plugin_dir_path(__FILE__) . './build/index.js'),
+        true
+    );
+    wp_enqueue_script( 'bold-assets-js' );
+
+    wp_localize_script('bold-assets-js', 'boldBlockData', array(
+        'iconUrl' => plugins_url('./assets/img/admin-panel/bold_co_button_light.png', __FILE__),
+        'exampleButtonLight' => plugins_url('./assets/img/admin-panel/bold_co_button_example_light.svg', __FILE__),
+        'exampleButtonDark' => plugins_url('./assets/img/admin-panel/bold_co_button_example_dark.svg', __FILE__),
+    ));
+
+    wp_register_style(
+        'bold-assets-styles',
+        plugin_dir_url(__FILE__) . './build/index.css',
+        [],
+        filemtime(plugin_dir_path(__FILE__) . './build/index.css')
+    );
 }
 
 // Añade enlaces rápidos de ajustes y documentación en la pantalla de plugins
@@ -92,8 +114,6 @@ function bold_add_5_star_review_link( $plugin_meta, $plugin_file )
 
 // Inicializar el plugin
 function bold_co_payment_gateway_woocommerce(): void {
-    // Cargar el script del botón de pago en el encabezado
-    add_action('wp_head', 'bold_co_custom_header_code');
 
     // Añadir enlaces rápidos a la pantalla de plugins
     add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'bold_co_plugin_action_generic_links');
@@ -103,18 +123,15 @@ function bold_co_payment_gateway_woocommerce(): void {
 
     // Añadir categoria personalizada para elementos de bloque
     add_filter('block_categories_all', 'bold_register_custom_category', 10, 2);
-
-    // Cargar traducciones
-    load_plugin_textdomain( 'bold-pagos-en-linea', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
     
     // Iniciar BoldShortcode
-    if (class_exists('BoldPagosEnLinea\BoldShortcode')) {
-        new \BoldPagosEnLinea\BoldShortcode();
+    if (class_exists('BoldPagosEnLinea\Components\BoldShortcode')) {
+        new \BoldPagosEnLinea\Components\BoldShortcode();
     }
 
     // Iniciar BoldButtonBlock
-    if (class_exists('BoldPagosEnLinea\BoldButtonBlock')) {
-        new \BoldPagosEnLinea\BoldButtonBlock();
+    if (class_exists('BoldPagosEnLinea\Components\BoldButtonBlock')) {
+        new \BoldPagosEnLinea\Components\BoldButtonBlock();
     }
     
     // Cargar el menú de administración
@@ -145,6 +162,43 @@ function bold_register_custom_category($categories) {
 
 // Hook para cargar el plugin después de que todos los plugins hayan sido cargados
 add_action('plugins_loaded', 'bold_co_payment_gateway_woocommerce', 0);
+// Cargar el scripts y styles
+add_action('init', 'bold_co_custom_header_code');
+add_action('init', 'bold_load_textdomain' );
+ 
+/**
+ * Load plugin textdomain.
+ */
+function bold_load_textdomain()
+{
+    load_plugin_textdomain( 'bold-pagos-en-linea', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
+
+//register elementor widget
+bold_add_styles_elementor_widget();
+add_action( 'elementor/preview/enqueue_styles', function() {
+    bold_add_styles_elementor_widget();
+} );
+add_action( 'elementor/editor/before_enqueue_scripts', function() {
+    bold_add_styles_elementor_widget();
+ } );
+function bold_add_styles_elementor_widget() {
+    wp_enqueue_style(
+        'bold-elementor-style', 
+        plugins_url( 'assets/css/bold-elementor-widget.css', __FILE__ ), 
+        false, 
+        filemtime(plugin_dir_path(__FILE__) . 'assets/css/bold-elementor-widget.css'), 
+        'all'
+    );
+}
+function bold_register_elementor_widget($widgets_manager ) {
+    bold_add_styles_elementor_widget();
+    // Iniciar BoldWidgetElementor
+    if (class_exists('BoldPagosEnLinea\Components\BoldWidgetElementor') && class_exists('\Elementor\Widget_Base')) {
+        $widgets_manager->register( new \BoldPagosEnLinea\Components\BoldWidgetElementor() );
+    }
+}
+add_action( 'elementor/widgets/register', 'bold_register_elementor_widget' );
 
 register_uninstall_hook( __FILE__, 'bold_co_uninstall' );
 

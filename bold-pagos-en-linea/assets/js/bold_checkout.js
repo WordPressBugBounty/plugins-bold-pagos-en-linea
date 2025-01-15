@@ -15,7 +15,7 @@ const boldIcon = () => {
         BoldImage.src = boldSettings.icon;
         BoldImage.style.float = 'right';
         BoldImage.style.marginRight = '20px';
-        BoldImage.alt = 'icon';
+        BoldImage.alt = 'Bold';
     
         const container = document.getElementById('bold-icon-checkout');
         container.innerHTML = '';
