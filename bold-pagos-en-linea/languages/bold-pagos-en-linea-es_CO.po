@@ -3,7 +3,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Bold pagos en linea  3.1.4\n"
+"Project-Id-Version: Bold pagos en linea  3.1.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bold-pagos-en-linea\n"
 "POT-Creation-Date: 2024-11-06 16:56-0500\n"
 "PO-Revision-Date: 2024-11-06 17:48-0500\n"
@@ -210,6 +210,10 @@ msgstr "El prefijo no puede iniciar con la palabra \"%1$s\""
 #: include/BoldSettingModel.php:89
 msgid "La URL de retorno por abandono es inválida, debe iniciar con el protocolo https:// y a ser posible del dominio de tu negocio online."
 msgstr "La URL de retorno por abandono es inválida, debe iniciar con el protocolo https:// y a ser posible del dominio de tu negocio online."
+
+#: include/BoldSettingModel.php:104
+msgid "La URL de de la imagen es inválida, debe iniciar con el protocolo https:// y a ser posible del dominio de tu negocio online."
+msgstr "La URL de de la imagen es inválida, debe iniciar con el protocolo https:// y a ser posible del dominio de tu negocio online."
 
 #. translators: %1$s the webhook API url that automatically updates orders processed with Bold
 #: include/BoldSettingModel.php:245
@@ -454,6 +458,10 @@ msgstr "Logo de color para fondos claros"
 msgid "Logo de color para fondos oscuros"
 msgstr "Logo de color para fondos oscuros"
 
+#: templates/bold-admin_panel.php:405
+msgid "Puedes agregar los logos en tus páginas con nuestros recursos gráficos"
+msgstr "Puedes agregar los logos en tus páginas con nuestros recursos gráficos"
+
 #: templates/bold-admin_panel.php:408
 msgid "Prefijo"
 msgstr "Prefijo"
@@ -465,6 +473,22 @@ msgid ""
 msgstr ""
 "Puedes agregar un prefijo al número de las órdenes. Sólo se aceptan valores alfanuméricos, guiones\n"
 "                    bajos \"_\" y medios \"-\"."
+
+#: templates/bold-admin_panel.php:435
+msgid "Imagen o logo personalizado"
+msgstr "Imagen o logo personalizado"
+
+#: templates/bold-admin_panel.php:437
+msgid "Configura una imagen que se mostrará en nuestra pasarela. Si no lo haces, usaremos la imagen predeterminada de tu tienda"
+msgstr "Configura una imagen que se mostrará en nuestra pasarela. Si no lo haces, usaremos la imagen predeterminada de tu tienda"
+
+#: templates/bold-admin_panel.php:449
+msgid "Seleccionar imagen"
+msgstr "Seleccionar imagen"
+
+#: templates/bold-admin_panel.php:449
+msgid "Quitar imagen"
+msgstr "Quitar imagen"
 
 #: templates/bold-admin_panel.php:426
 msgid "URL retorno por abandono"
@@ -583,3 +607,11 @@ msgstr "Si quieres que tu cliente decida cuánto quiere pagar el monto deberá s
 #: src/components/ButtonBlock/index.js:63
 msgid "Si el monto es cero, se cobrará en COP"
 msgstr "Si el monto es cero, se cobrará en COP"
+
+#: assets/js/bold-media-uploader.js:12
+msgid "Usar esta Imagen"
+msgstr "Usar esta Imagen"
+
+#: assets/js/bold-media-uploader.js:22
+msgid "Por favor, selecciona un archivo de imagen válido (JPG, PNG, WEBP)"
+msgstr "Por favor, selecciona un archivo de imagen válido (JPG, PNG, WEBP)"

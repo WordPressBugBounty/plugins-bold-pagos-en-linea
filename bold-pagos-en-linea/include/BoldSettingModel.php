@@ -18,6 +18,7 @@ class BoldSettingModel {
 	private string $test_api_key;
 	private string $test_secret_key;
 	private string $origin_url;
+	private string $image_checkout_url;
 
 	public function setPrefix( $prefix ): void {
 		$test_prefix    = 'test';
@@ -95,6 +96,20 @@ class BoldSettingModel {
 		$this->origin_url = $origin_url_cleaned;
 	}
 
+	public function setImageCheckoutUrl( $image_checkout_url ): void {
+		if(strlen(trim($image_checkout_url)) > 0){
+			$image_checkout_url_cleaned = sanitize_url(trim($image_checkout_url), ['https']);
+			if ( !filter_var($image_checkout_url_cleaned, FILTER_VALIDATE_URL) ) {
+				$this->image_checkout_url ='';
+				$message_error = __('La URL de de la imagen es inválida, debe iniciar con el protocolo https:// y a ser posible del dominio de tu negocio online.', 'bold-pagos-en-linea');
+				throw new \InvalidArgumentException( esc_html($message_error) );
+			}
+		}else{
+			$image_checkout_url_cleaned = '';
+		}
+		$this->image_checkout_url = $image_checkout_url_cleaned;
+	}
+
 	public function setEnabled( $enabled ): void {
 		$this->enabled = $enabled;
 	}
@@ -131,6 +146,10 @@ class BoldSettingModel {
 		return $this->origin_url;
 	}
 
+	public function getImageCheckoutUrl(): string {
+		return $this->image_checkout_url;
+	}
+
 	public function getEnabled(): string {
 		if ( class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
 			return $this->enabled;
@@ -163,6 +182,7 @@ class BoldSettingModel {
 				'test_api_key'    => $this->test_api_key,
 				'test_secret_key' => $this->test_secret_key,
 				'origin_url' 	  => $this->origin_url,
+				'image_checkout_url' => $this->image_checkout_url,
 			];
 		}
 
@@ -173,6 +193,7 @@ class BoldSettingModel {
 			'test_api_key'    => $this->test_api_key,
 			'test_secret_key' => $this->test_secret_key,
 			'origin_url' 	  => $this->origin_url,
+			'image_checkout_url' => $this->image_checkout_url,
 		];
 	}
 
@@ -225,6 +246,7 @@ class BoldSettingModel {
 			$this->test_api_key     = $gateway->get_option( 'test_api_key' );
 			$this->test_secret_key  = $gateway->get_option( 'test_secret_key' );
 			$this->origin_url  		= $gateway->get_option( 'origin_url' );
+			$this->image_checkout_url = $gateway->get_option( 'image_checkout_url' );
 		}
 
 		$this->saveSettingModelToOptions( $completeInitialization );

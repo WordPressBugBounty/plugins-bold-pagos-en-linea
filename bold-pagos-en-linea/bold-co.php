@@ -3,7 +3,7 @@
  * Plugin Name: Bold pagos en linea 
  * Plugin URI: https://developers.bold.co/pagos-en-linea/boton-de-pagos/plugins/wordpress
  * Description: Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes.
- * Version: 3.1.4
+ * Version: 3.1.5
  * Author: Bold
  * Author URI: http://www.bold.co/
  * Network: true
@@ -60,7 +60,7 @@ use BoldPagosEnLinea\BoldConstants;
 
 // Función para registrar y cargar el script de botón de pago
 function bold_co_custom_header_code(): void {
-    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.4', true);
+    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.5', true);
     wp_enqueue_script('woocommerce_bold_payment_button_js');
 
     wp_register_script(
@@ -175,13 +175,10 @@ function bold_load_textdomain()
 }
 
 //register elementor widget
-bold_add_styles_elementor_widget();
-add_action( 'elementor/preview/enqueue_styles', function() {
-    bold_add_styles_elementor_widget();
-} );
-add_action( 'elementor/editor/before_enqueue_scripts', function() {
-    bold_add_styles_elementor_widget();
- } );
+add_action( 'init', 'bold_add_styles_elementor_widget');
+add_action( 'elementor/frontend/after_enqueue_styles', 'bold_add_styles_elementor_widget' );
+add_action( 'elementor/preview/enqueue_styles', 'bold_add_styles_elementor_widget');
+add_action( 'elementor/editor/before_enqueue_scripts', 'bold_add_styles_elementor_widget');
 function bold_add_styles_elementor_widget() {
     wp_enqueue_style(
         'bold-elementor-style', 

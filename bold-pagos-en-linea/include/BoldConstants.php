@@ -37,6 +37,7 @@ class BoldConstants {
         'logo_is_light',
         'prefix',
         'settings',
+        'image_checkout_url',
     );
     
     const TAGS_ENABLED = array(

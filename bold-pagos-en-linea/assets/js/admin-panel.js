@@ -77,7 +77,7 @@ function redirectValidation(el, e) {
     return false;
   } else {
     var target = jQuery(el).data("target") ?? "_self";
-    window.open(jQuery(el).data("href"), target);
+    window.open(jQuery(el).data("href"), target, "noopener,noreferrer");
   }
 }
 

@@ -3,41 +3,32 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
 use BoldPagosEnLinea\BoldCommon;
 
-wp_register_script( 'woocommerce_bold_admin_panel_js', plugins_url( '/../assets/js/admin-panel.js', __FILE__ ), array(
-	'bold-assets-js',
-	'jquery'
-), '3.1.4', true );
-wp_enqueue_script( 'woocommerce_bold_admin_panel_js' );
-wp_enqueue_style( 'woocommerce_bold_admin_panel_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_panel_style.css', false, '3.1.4', 'all' );
-
-$prefix                     = BoldCommon::getOptionKey( 'prefix', 'Bold' );
-$testMode                   = BoldCommon::getOptionKey( 'test', 'no' );
-$colorIsLight               = BoldCommon::getOptionKey( 'logo_is_light', 'no' );
-$identityKey                = BoldCommon::getOptionKey( 'prod_api_key', '' );
-$secretKey                  = BoldCommon::getOptionKey( 'prod_secret_key', '' );
-$testIdentityKey            = BoldCommon::getOptionKey( 'test_api_key', '' );
-$testSecretKey              = BoldCommon::getOptionKey( 'test_secret_key', '' );
-$origin_url                 = BoldCommon::getOptionKey( 'origin_url', '' );
-$woocommerceExist           = class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' );
-$webhookUrl                 = $woocommerceExist ? add_query_arg( 'wc-api', 'bold_co', trailingslashit( get_home_url() ) ) : '';
-$manual_update              = esc_url( wp_nonce_url( admin_url( 'admin.php?page=bold-pagos-en-linea&boldco_status=yes' ) , 'bold-update-orders') );
-$requiredFieldValid         = function ( $item ) {
-	return strlen( $item ) != 0;
-};
-$savedConfig                = BoldCommon::isSavedParams( array(
-	$identityKey,
-	$secretKey,
-	$testIdentityKey,
-	$testSecretKey,
-	$prefix
-), $requiredFieldValid, true );
+$prefix             = BoldCommon::getOptionKey( 'prefix', 'Bold' );
+$testMode           = BoldCommon::getOptionKey( 'test', 'no' );
+$colorIsLight       = BoldCommon::getOptionKey( 'logo_is_light', 'no' );
+$identityKey        = BoldCommon::getOptionKey( 'prod_api_key', '' );
+$secretKey          = BoldCommon::getOptionKey( 'prod_secret_key', '' );
+$testIdentityKey    = BoldCommon::getOptionKey( 'test_api_key', '' );
+$testSecretKey      = BoldCommon::getOptionKey( 'test_secret_key', '' );
+$origin_url         = BoldCommon::getOptionKey( 'origin_url', '' );
+$image_checkout_url = BoldCommon::getOptionKey( 'image_checkout_url', '' );
+$woocommerceExist   = class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' );
+$webhookUrl         = $woocommerceExist ? add_query_arg( 'wc-api', 'bold_co', trailingslashit( get_home_url() ) ) : '';
+$manual_update      = esc_url( wp_nonce_url( admin_url( 'admin.php?page=bold-pagos-en-linea&boldco_status=yes' ) , 'bold-update-orders') );
+$requiredFieldValid = function ( $item ) { return strlen( $item ) != 0; };
+$savedConfig        = BoldCommon::isSavedParams( array(
+                        $identityKey,
+                        $secretKey,
+                        $testIdentityKey,
+                        $testSecretKey,
+                        $prefix
+                    ), $requiredFieldValid, true );
 $activatedPaymentMethodText = BoldCommon::getOptionKey( 'enabled', '' ) === 'yes' ? __('Ir a deshabilitar el método de pago', 'bold-pagos-en-linea') : __('Ir a habilitar el método de pago', 'bold-pagos-en-linea');
 $wooCommerceConfigUrl       = esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=bold_co' ) );
 $form_url = add_query_arg( array( 
-	'page' => 'bold-pagos-en-linea'
+    'page' => 'bold-pagos-en-linea'
 ), admin_url( 'admin.php' ) );
 ?>
 
@@ -352,50 +343,55 @@ $form_url = add_query_arg( array(
             <h3 id="additional__settings__title" class="section__title">
                 4. <?php echo esc_html__('Configuraciones adicionales', 'bold-pagos-en-linea') ?>
             </h3>
-            <div id="additional__settings__button" class="bold-card">
-                <article id="additional__settings__button__info">
-                    <span class="additional__settings__title"><?php echo esc_html__('Color del logo', 'bold-pagos-en-linea') ?> Bold</span>
-                    <p id="additional__settings__button__info__desc"><?php echo esc_html__('Selecciona el color del logo Bold que mejor se
-                        ajuste al diseño de tu página web.', 'bold-pagos-en-linea') ?> </p>
-                </article>
-                <div id="additional__settings__button__selector">
-                    <article class="additional__settings__button__selector__item">
-                        <label
-                                class="radio__input additional__settings__button__selector__item__input"
-                                for="dark_button"
-                        >
-                            <input
-                                    type="radio"
-                                    name="logo_is_light"
-                                    id="dark_button"
-                                    value="no"
-								<?php echo $colorIsLight === 'no' ? 'checked' : '' ?>
-                            />
-                            <i></i>
-                        </label>
-                        <img src="<?php echo esc_url(plugin_dir_url( __DIR__ )."assets/img/admin-panel/bold_co_button_dark.png"); ?>"
-                             class="additional__settings__button__selector__item__icon" alt="dark button"/>
-                        <span class="additional__settings__button__selector__item__desc"><?php echo esc_html__('Logo de color para fondos claros', 'bold-pagos-en-linea') ?></span>
+            <div class="bold-card">
+                <div id="additional__settings__button">
+                    <article id="additional__settings__button__info">
+                        <span class="additional__settings__title"><?php echo esc_html__('Color del logo', 'bold-pagos-en-linea') ?> Bold</span>
+                        <p id="additional__settings__button__info__desc"><?php echo esc_html__('Selecciona el color del logo Bold que mejor se
+                            ajuste al diseño de tu página web.', 'bold-pagos-en-linea') ?> </p>
                     </article>
-                    <article class="additional__settings__button__selector__item">
-                        <label
-                                class="radio__input additional__settings__button__selector__item__input"
-                                for="light_button"
-                        >
-                            <input
-                                    type="radio"
-                                    name="logo_is_light"
-                                    id="light_button"
-                                    value="yes"
-								<?php echo $colorIsLight === 'yes' ? 'checked' : '' ?>
-                            />
-                            <i></i>
-                        </label>
-                        <img src="<?php echo esc_url(plugin_dir_url( __DIR__ )."assets/img/admin-panel/bold_co_button_light.png"); ?>"
-                             class="additional__settings__button__selector__item__icon" alt="light button"/>
-                        <span class="additional__settings__button__selector__item__desc"><?php echo esc_html__('Logo de color para fondos oscuros', 'bold-pagos-en-linea') ?></span>
-                    </article>
+                    <div id="additional__settings__button__selector">
+                        <article class="additional__settings__button__selector__item">
+                            <label
+                                    class="radio__input additional__settings__button__selector__item__input"
+                                    for="dark_button"
+                            >
+                                <input
+                                        type="radio"
+                                        name="logo_is_light"
+                                        id="dark_button"
+                                        value="no"
+                                    <?php echo $colorIsLight === 'no' ? 'checked' : '' ?>
+                                />
+                                <i></i>
+                            </label>
+                            <div id="bold-config-dark-icons" class="bold-config-icons"></div>
+                            <span class="additional__settings__button__selector__item__desc"><?php echo esc_html__('Logo de color para fondos claros', 'bold-pagos-en-linea') ?></span>
+                        </article>
+                        <article class="additional__settings__button__selector__item">
+                            <label
+                                    class="radio__input additional__settings__button__selector__item__input"
+                                    for="light_button"
+                            >
+                                <input
+                                        type="radio"
+                                        name="logo_is_light"
+                                        id="light_button"
+                                        value="yes"
+                                    <?php echo $colorIsLight === 'yes' ? 'checked' : '' ?>
+                                />
+                                <i></i>
+                            </label>
+                            <div id="bold-config-light-icons" class="bold-config-icons"></div>
+                            <span class="additional__settings__button__selector__item__desc"><?php echo esc_html__('Logo de color para fondos oscuros', 'bold-pagos-en-linea') ?></span>
+                        </article>
+                    </div>
                 </div>
+                <p id="additional__settings__color__desc">
+                    <?php echo esc_html__('Puedes agregar los logos en tus páginas con nuestros recursos gráficos', 'bold-pagos-en-linea') ?>. <?php echo esc_html__('Conoce más', 'bold-pagos-en-linea') ?> <a id="additional__settings__prefix__desc__link"
+                                                        href="https://developers.bold.co/graphic-resources"
+                                                        target="_blank" class="link__info__blue"><?php echo esc_html__('aquí', 'bold-pagos-en-linea') ?>.</a>
+                </p>
             </div>
             <div id="additional__settings__prefix" class="bold-card">
                 <label for="additional__settings__prefix__input"><span
@@ -414,7 +410,38 @@ $form_url = add_query_arg( array(
                                                           target="_blank" class="link__info__blue"><?php echo esc_html__('aquí', 'bold-pagos-en-linea') ?>.</a>
                 </p>
             </div>
-            <?php endif; ?>
+            <?php endif; ?>	
+            <div class="bold-card">
+                <div id="additional__settings__image_checkout">
+                    <article id="additional__settings__image_checkout__info">
+                        <span class="additional__settings__title"><?php echo esc_html__('Imagen o logo personalizado', 'bold-pagos-en-linea') ?></span>
+                        <div id="additional__settings__image_checkout__info__desc">
+                            <p><?php echo esc_html__('Configura una imagen que se mostrará en nuestra pasarela. Si no lo haces, usaremos la imagen predeterminada de tu tienda',
+                            'bold-pagos-en-linea') ?> </p></div>
+                    </article>
+                    <div id="additional__settings__image_checkout__selector">
+                        <div id="upload_button">
+                            <div id="upload_icon_default">
+                                <img src="<?php echo esc_url((!empty($image_checkout_url))?$image_checkout_url:plugin_dir_url( __DIR__ )."assets/img/admin-panel/default_image.svg"); ?>"
+                                alt="Seleccionar imagen"/>
+                            </div>
+                            <p id="upload_text"><?php echo esc_html__('Seleccionar imagen', 'bold-pagos-en-linea') ?></p>
+                            <div id="actions_container">
+                                <img id="upload_icon_action" class="<?php echo ((!empty($image_checkout_url))?'bold-hidden':'') ?>" src="<?php echo esc_url(plugin_dir_url( __DIR__ )."assets/img/admin-panel/upload_icon.svg"); ?>"
+                                    alt="Seleccionar imagen"/>
+                                <img id="upload_icon_delete" class="<?php echo ((empty($image_checkout_url))?'bold-hidden':'') ?>" src="<?php echo esc_url(plugin_dir_url( __DIR__ )."assets/img/admin-panel/ic_trash.svg"); ?>"
+                                    alt="Quitar imagen"/>
+                            </div>
+                        </div>
+                    </div>
+                    <input
+                        type="hidden"
+                        name="image_checkout_url"
+                        id="additional__settings__image_checkout__input"
+                        value="<?php echo esc_attr($image_checkout_url) ?>"
+                    />
+                </div>
+            </div>
             <div id="additional__settings__originurl" class="bold-card">
                 <label for="additional__settings__originurl__input"><span
                             class="additional__settings__title"><?php echo esc_html__('URL retorno por abandono', 'bold-pagos-en-linea') ?></span></label>

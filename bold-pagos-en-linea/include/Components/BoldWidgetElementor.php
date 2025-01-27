@@ -294,7 +294,7 @@ class BoldWidgetElementor extends \Elementor\Widget_Base {
 			$description = $settings["description"] ? esc_attr($settings["description"]) : '';
 			$bold_color_button = esc_attr($settings["color"]);
 			$bold_size_button = esc_attr($settings["size"]);
-			$woocommerce_bold_version = "wordpress-elementor-3.1.4";
+			$woocommerce_bold_version = "wordpress-elementor-3.1.5";
 	
 			$html_tag = [
 				'ordered' => 'ol',
