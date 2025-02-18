@@ -1,3 +1,13 @@
+jQuery(document).ready(function($) {
+  if(window.Notiflix){
+    window.Notiflix.Notify.init({
+        timeout: 3500,
+        position: 'right-top',
+        zindex: 99999
+    });
+  }
+});
+
 function changeFieldValueDisplay(el, type) {
   jQuery(el).attr("type", type);
 }
@@ -8,33 +18,15 @@ function copyUrlToClipboard() {
       navigator.clipboard
         .writeText(jQuery("#webhook__input__url").val())
         .then(function () {
-          window.Swal?.fire({
-            title: 'Copiaste la URL de Webhook.',
-            icon: 'success',
-            confirmButtonText: 'Listo',
-            position: 'top-end',
-            timer: 3500
-          });
+          window?.Notiflix.Notify.success('Copiaste la URL de Webhook.');
         })
         .catch(function () {
-          window.Swal?.fire({
-            title: 'No pudimos copiar la URL de Webhook, seleccionala y cópiala manualmente.',
-            icon: 'warning',
-            confirmButtonText: 'Listo',
-            position: 'top-end',
-            timer: 3500
-          });
+          window?.Notiflix.Notify.warning('No pudimos copiar la URL de Webhook, seleccionala y cópiala manualmente.');
         });
     }
   } catch (error) {
     console.error(error);
-    window.Swal?.fire({
-      title: 'No pudimos copiar la URL de Webhook, seleccionala y cópiala manualmente.',
-      icon: 'warning',
-      confirmButtonText: 'Listo',
-      position: 'top-end',
-      timer: 3500
-    });
+    window?.Notiflix.Notify.warning('No pudimos copiar la URL de Webhook, seleccionala y cópiala manualmente.');
   }
 }
 
@@ -55,12 +47,12 @@ function changeTagStatus(el) {
 function testTextValidation(el) {
   var inputText = jQuery(el).val();
   if (inputText?.toLowerCase()?.startsWith("test")) {
-    notifier?.alert(`El prefijo no puede iniciar con la palabra "Test".`);
+    window?.Notiflix.Notify.warning(`El prefijo no puede iniciar con la palabra "Test".`);
     jQuery(el).val("");
   }
   var regex = /^[a-zA-Z0-9_-]+$/;
   if (!regex.test(inputText)) {
-    notifier?.alert(
+    window?.Notiflix.Notify.warning(
       `Sólo se aceptan valores alfanuméricos, guiones bajos “_” y medios “-”`
     );
     jQuery(el).val("");
@@ -71,7 +63,7 @@ function redirectValidation(el, e) {
   e.preventDefault();
   var savedConfig = parseInt(jQuery(el).data("saved-config"));
   if (savedConfig === 0) {
-    notifier?.alert(
+    window?.Notiflix.Notify.warning(
       "Antes de ir a habilitar el método de pago, debes hacer las configuraciones."
     );
     return false;

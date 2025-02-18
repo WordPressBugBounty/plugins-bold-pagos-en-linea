@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.6] - 2025-02-18
+### Security:
+- Updates libraies versions for security and minor fixes.
+
+### Fix:
+- Fixed error on load payment method in legacy checkout woo and other plugin.
+
 ## [3.1.5] - 2025-01-27
 ### Added:
 - Add option for custom image for show in checkout Bold.

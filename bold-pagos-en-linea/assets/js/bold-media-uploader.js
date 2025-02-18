@@ -2,6 +2,14 @@ jQuery(document).ready(function($) {
     const { __ } = wp.i18n;
     let mediaUploader;
 
+    if(window.Notiflix){
+        window.Notiflix.Notify.init({
+            timeout: 3500,
+            position: 'right-top',
+            zindex: 99999
+        });
+    }
+
     $('#upload_button').on('click', '#upload_icon_default, #upload_text, #upload_icon_action', function(e) {
         e.preventDefault();
 
@@ -22,13 +30,8 @@ jQuery(document).ready(function($) {
                 const messageWarning = __('Por favor, selecciona un archivo de imagen válido (JPG, PNG, WEBP)', 'bold-pagos-en-linea');
                 const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
                 if (!validMimeTypes.includes(attachment.mime)) {
-                    if(window.Swal){
-                        window.Swal?.fire({
-                            text: messageWarning,
-                            icon: 'warning',
-                            confirmButtonText: 'Listo',
-                            timer: 3500
-                        });
+                    if(window.Notiflix){
+                        window?.Notiflix.Notify.warning(messageWarning);
                     }else{
                         alert(messageWarning);
                     }

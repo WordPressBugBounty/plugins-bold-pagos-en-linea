@@ -1,2 +1,2 @@
 import './components/ButtonBlock';
-import './utils/libraries/global.sweetalert2'
+import './utils/libraries/global.notiflix'

@@ -11,9 +11,9 @@
     "author": "Bold",
     "license": "ISC",
     "devDependencies": {
-        "@wordpress/scripts": "^30.7.0"
+        "@wordpress/scripts": "^30.11.0"
     },
     "dependencies": {
-        "sweetalert2": "^11.6.13"
+        "notiflix": "^3.2.8"
     }
 }

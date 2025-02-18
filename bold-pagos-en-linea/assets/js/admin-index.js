@@ -7,13 +7,13 @@ function activationValidation(el, e) {
     jQuery(".bold__config__empty").hasClass("bold__config__empty")
   ) {
     jQuery(".bold__config__field__switch__item").attr("data-status", "yes");
-    window.Swal?.fire({
-      title: 'Antes de habilitar el método de pago, debes hacer las configuraciones.',
-      icon: 'warning',
-      confirmButtonText: 'Listo',
-      position: 'top-end',
-      timer: 3500
-    });
+    window?.Notiflix.Notify.warning(
+      'Antes de habilitar el método de pago, debes hacer las configuraciones.',
+      {
+        timeout: 3500,
+        position: 'right-top',
+        zindex: 99999
+      });
 
     setTimeout(() => {
       jQuery(".bold__config__field__switch__item").attr("data-status", "no");
