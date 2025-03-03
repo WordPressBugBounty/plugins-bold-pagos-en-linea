@@ -3,7 +3,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Bold pagos en linea  3.1.6\n"
+"Project-Id-Version: Bold pagos en linea  3.1.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bold-pagos-en-linea\n"
 "POT-Creation-Date: 2024-11-06 16:56-0500\n"
 "PO-Revision-Date: 2024-11-06 17:48-0500\n"

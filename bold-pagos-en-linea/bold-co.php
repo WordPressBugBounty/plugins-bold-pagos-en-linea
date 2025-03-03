@@ -3,7 +3,7 @@
  * Plugin Name: Bold pagos en linea 
  * Plugin URI: https://developers.bold.co/pagos-en-linea/boton-de-pagos/plugins/wordpress
  * Description: Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes.
- * Version: 3.1.6
+ * Version: 3.1.7
  * Author: Bold
  * Author URI: http://www.bold.co/
  * Network: true
@@ -60,7 +60,7 @@ use BoldPagosEnLinea\BoldConstants;
 
 // Función para registrar y cargar el script de botón de pago
 function bold_co_custom_header_code(): void {
-    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.6', true);
+    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.7', true);
     wp_enqueue_script('woocommerce_bold_payment_button_js');
 
     wp_register_script(
@@ -173,6 +173,12 @@ function bold_load_textdomain()
 {
     load_plugin_textdomain( 'bold-pagos-en-linea', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
+
+// Activar cron actualizar ordenes WooCommerce
+add_action( \BoldPagosEnLinea\BoldCronManager::CRON_HOOK, [ '\BoldPagosEnLinea\BoldCronManager', 'execute_cron_task' ] );
+add_action( 'init', 'BoldPagosEnLinea\BoldCronManager::schedule_cron');
+register_activation_hook(__FILE__, 'BoldPagosEnLinea\BoldCronManager::schedule_cron');
+register_deactivation_hook(__FILE__, 'BoldPagosEnLinea\BoldCronManager::deactivate');
 
 //register elementor widget
 add_action( 'init', 'bold_add_styles_elementor_widget');

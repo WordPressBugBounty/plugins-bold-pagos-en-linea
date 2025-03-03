@@ -50,17 +50,17 @@ class BoldMenuAdmin
     private function addAssetsAdmin(): void
     {
         wp_register_script( 'woocommerce_bold_admin_panel_js', plugins_url( '/../assets/js/admin-panel.js', __FILE__ ),
-            array('bold-assets-js', 'jquery'), '3.1.6', true );
+            array('bold-assets-js', 'jquery'), '3.1.7', true );
         wp_enqueue_script( 'woocommerce_bold_admin_panel_js' );
-        wp_enqueue_style( 'woocommerce_bold_admin_panel_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_panel_style.css', false, '3.1.6', 'all' );
+        wp_enqueue_style( 'woocommerce_bold_admin_panel_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_panel_style.css', false, '3.1.7', 'all' );
 
-        wp_register_script( 'woocommerce_bold_icons-dark-ui', BoldConstants::URL_CHECKOUT.'/library/ui-kit.js?layout=vertical&type=slider&target=bold-config-dark-icons', null, '3.1.6', true );
+        wp_register_script( 'woocommerce_bold_icons-dark-ui', BoldConstants::URL_CHECKOUT.'/library/ui-kit.js?layout=vertical&type=slider&target=bold-config-dark-icons', null, '3.1.7', true );
         wp_enqueue_script( 'woocommerce_bold_icons-dark-ui' );
-        wp_register_script( 'woocommerce_bold_icons-light-ui', BoldConstants::URL_CHECKOUT.'/library/ui-kit.js?layout=vertical&type=slider&theme=dark&target=bold-config-light-icons', null, '3.1.6', true );
+        wp_register_script( 'woocommerce_bold_icons-light-ui', BoldConstants::URL_CHECKOUT.'/library/ui-kit.js?layout=vertical&type=slider&theme=dark&target=bold-config-light-icons', null, '3.1.7', true );
         wp_enqueue_script( 'woocommerce_bold_icons-light-ui' );
 
         wp_enqueue_media();
-        wp_enqueue_script('woocommerce_bold_media_uploader', plugins_url( '/../assets/js/bold-media-uploader.js', __FILE__ ), ['jquery', 'wp-i18n'], '3.1.6', true);
+        wp_enqueue_script('woocommerce_bold_media_uploader', plugins_url( '/../assets/js/bold-media-uploader.js', __FILE__ ), ['jquery', 'wp-i18n'], '3.1.7', true);
         wp_localize_script('woocommerce_bold_media_uploader', 'BoldPlugin', ['pluginUrl' => plugin_dir_url(__DIR__)]);
     }
 
@@ -79,19 +79,28 @@ class BoldMenuAdmin
                     $success_notice = new BoldNotice('success', esc_html__('Actualizaste tus órdenes.', 'bold-pagos-en-linea'));
                     echo wp_kses($success_notice->show(), wp_kses_allowed_html('post'));
                 } else {
-                    $error_notice = new BoldNotice('error', esc_html__('No se pudieron actualizar tus órdenes, vuelve a intentarlo.', 'bold-pagos-en-linea'));
+                    $message_error = esc_html__('No se pudieron actualizar tus órdenes, vuelve a intentarlo.', 'bold-pagos-en-linea');
+                    $error_notice = new BoldNotice('error', $message_error);
+                    $error_notice_script = "<script>document.addEventListener('DOMContentLoaded', function() {if(window.Notiflix) window.Notiflix.Notify.failure('".$message_error."',{zindex: 99999});});</script>";
                     echo wp_kses($error_notice->show(), wp_kses_allowed_html('post'));
+                    echo wp_kses($error_notice_script, ['script'=>[]]);
                 }
             }else if(isset($_GET["boldco_status"])){
-                $error_notice = new BoldNotice('warning', esc_html__('No se pudo actualizar la información, no paso la verificación de seguridad. Intente de nuevo.', 'bold-pagos-en-linea'));
+                $message_error = esc_html__('No se pudo actualizar la información, no paso la verificación de seguridad. Intente de nuevo.', 'bold-pagos-en-linea');
+                $error_notice = new BoldNotice('warning', $message_error);
+                $error_notice_script = "<script>document.addEventListener('DOMContentLoaded', function() {if(window.Notiflix) window.Notiflix.Notify.warning('".$message_error."',{zindex: 99999});});</script>";
                 echo wp_kses($error_notice->show(), wp_kses_allowed_html('post'));
+                echo wp_kses($error_notice_script, ['script'=>[]]);
             }
         }
 
         if (isset($_SERVER["REQUEST_METHOD"]) && sanitize_text_field(wp_unslash($_SERVER["REQUEST_METHOD"])) === "POST") {
             if ( empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'bold-update-settings' ) ) {
-                $error_notice = new BoldNotice('warning', esc_html__('No se pudo guardar la información, no paso la verificación de seguridad. Intente de nuevo.', 'bold-pagos-en-linea'));
+                $message_error = esc_html__('No se pudo guardar la información, no paso la verificación de seguridad. Intente de nuevo.', 'bold-pagos-en-linea');
+                $error_notice = new BoldNotice('warning', $message_error);
+                $error_notice_script = "<script>document.addEventListener('DOMContentLoaded', function() {if(window.Notiflix) window.Notiflix.Notify.warning('".$message_error."',{zindex: 99999});});</script>";
                 echo wp_kses($error_notice->show(), wp_kses_allowed_html('post'));
+                echo wp_kses($error_notice_script, ['script'=>[]]);
             }else{
                 try {
                     $settings_model->mapPostDataToSettingModel($_POST);
@@ -106,7 +115,7 @@ class BoldMenuAdmin
                     echo wp_kses($success_notice->show(), wp_kses_allowed_html('post'));
                 } catch (\InvalidArgumentException $e) {
                     $error_notice = new BoldNotice('error', 'Error: ' . $e->getMessage());
-                    $error_notice_script = "<script>document.addEventListener('DOMContentLoaded', function() {if(notifierWC) notifierWC?.alert('".esc_html($e->getMessage())."');});</script>";
+                    $error_notice_script = "<script>document.addEventListener('DOMContentLoaded', function() {if(window.Notiflix) window.Notiflix.Notify.failure('".esc_html($e->getMessage())."',{zindex: 99999});});</script>";
                     echo wp_kses($error_notice->show(), wp_kses_allowed_html('post'));
                     echo wp_kses($error_notice_script, ['script'=>[]]);
                 }

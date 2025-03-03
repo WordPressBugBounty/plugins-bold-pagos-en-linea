@@ -15,5 +15,8 @@
     },
     "dependencies": {
         "notiflix": "^3.2.8"
+    },
+    "overrides": {
+        "ansi-html": "npm:ansi-html-community@^0.0.8"
     }
 }

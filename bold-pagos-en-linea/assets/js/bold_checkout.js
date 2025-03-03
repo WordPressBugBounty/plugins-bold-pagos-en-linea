@@ -7,6 +7,8 @@ const boldContent = () => {
 };
 const boldIcon = () => {
     const isLight = boldSettings.icon.indexOf('light') !== -1;
+    const existingScripts = Array.from(document.querySelectorAll(`script[src^="https://checkout.bold.co/library/ui-kit.js"]`));
+        existingScripts.forEach(script => script.remove());
     const script = document.createElement('script');
     script.src = 'https://checkout.bold.co/library/ui-kit.js?hideLogo&type=slider&target=bold-icon-checkout'+((isLight)?'&theme=dark':'');
     script.async = true;
