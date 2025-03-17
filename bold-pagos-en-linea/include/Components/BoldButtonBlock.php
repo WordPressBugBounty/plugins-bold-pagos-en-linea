@@ -76,7 +76,7 @@ class BoldButtonBlock
         $description = $attrs["description"] ? esc_attr($attrs["description"]) : '';
         $bold_color_button = esc_attr($attrs["color"]);
         $bold_size_button = esc_attr($attrs["size"]);
-        $woocommerce_bold_version = "wordpress-block-3.1.7";
+        $woocommerce_bold_version = "wordpress-block-3.1.8";
 
         return BoldCommon::getButtonScript(
             $apiKey,

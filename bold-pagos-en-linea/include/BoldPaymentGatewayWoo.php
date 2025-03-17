@@ -41,9 +41,9 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.1.7', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.1.8', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
-		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.1.7', true );
+		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.1.8', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_basic_js' );
 		wp_localize_script( 'woocommerce_bold_checkout_basic_js', 'BoldPlugin', ['checkoutUrl' => BoldConstants::URL_CHECKOUT]);
 	}
@@ -383,7 +383,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	function bold_get_pending_orders($date_after = null): array {
 		// Get all orders pending
 		if (!$date_after) {
-			$date_after = gmdate('Y-m-d', strtotime('-7 days'));
+			$date_after = gmdate('Y-m-d', strtotime('-2 days'));
 		}
 		$args = array(
 			'status'         => [ 'pending', 'failed' ],
@@ -524,7 +524,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.1.7', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.1.8', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -603,7 +603,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'integrity-signature'	=> $signature,
 			'redirection-url'  		=> $return_url,
 			'origin-url'       		=> $origin_url,
-			'integration-type' 		=> 'wordpress-woocommerce-3.1.7',
+			'integration-type' 		=> 'wordpress-woocommerce-3.1.8',
 			'customer-data'    		=> wp_json_encode($data_billing_order['customer_data']) ,
 			'billing-address'  		=> wp_json_encode($data_billing_order['billing_address']),
 			'opening-time'	   		=> (int) (microtime(true) * 1000000),
@@ -668,14 +668,13 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		if(count($order_items)==1){
 			$item = reset($order_items);
 			$product = $item->get_product();
-			$product_image = wp_get_attachment_image_src( $product->get_image_id(), 'full' );
-			if($product_image){
-				return BoldCommon::getValidatedImage($product_image[0]);
-			}else{
-				return $image_store;
+			if ($product && is_a($product, 'WC_Product') && $product->get_image_id()!=false) {
+				$product_image = wp_get_attachment_image_src( $product->get_image_id(), 'full' );
+				if($product_image){
+					return BoldCommon::getValidatedImage($product_image[0]);
+				}
 			}
-		}else{
-			return $image_store;
 		}
+		return $image_store;
 	}
 }

@@ -2,7 +2,6 @@
     if(!window.bold){
         window.bold = {};
     }
-    bold_load_icon_basic();
     const paymentInput = document.getElementById('payment_method_bold_co');
     if (paymentInput) {
         paymentInput.addEventListener('change', bold_load_icon_basic);
@@ -37,8 +36,7 @@ function bold_load_icon_basic(){
             maxWidth: '40%'
         });
         label.appendChild(divIcons);
-
-        const existingScripts = Array.from(document.querySelectorAll(`script[src^="${BoldPlugin.checkoutUrl}/library/ui-kit.js"]`));
+        const existingScripts = Array.from(document.querySelectorAll(`script[src*="${BoldPlugin.checkoutUrl}/library/ui-kit.js"]`));
         existingScripts.forEach(script => script.remove());
 
         const script = document.createElement('script');
