@@ -1,5 +1,10 @@
 *** Bold pagos en linea ***
 
+2025-03-18 - version 3.1.9
+
+Changed - Improvements in security and minor fixes in validations and others.
+Added - Including es language.
+
 2025-03-17 - version 3.1.8
 
 Changed - Adjust max time to -2 days for validate pending or failed orders in Bold.

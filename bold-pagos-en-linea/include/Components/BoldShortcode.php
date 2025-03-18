@@ -47,7 +47,7 @@ class BoldShortcode
         $style_parts = isset($attrs["color"]) ? explode('-', esc_attr($attrs["color"])) : ['dark', 'L'];
         $color_button = $style_parts[0];
         $size_button = isset($style_parts[1]) ? esc_attr($style_parts[1]) : 'L';
-        $woocommerce_bold_version = "wordpress-shortcode-3.1.8";
+        $woocommerce_bold_version = "wordpress-shortcode-3.1.9";
 
         return BoldCommon::getButtonScript(
             $apiKey,

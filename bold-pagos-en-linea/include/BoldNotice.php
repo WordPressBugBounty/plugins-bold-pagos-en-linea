@@ -23,7 +23,7 @@ class BoldNotice {
     }
 
     public function show() {
-        wp_enqueue_style( 'woocommerce_bold_admin_notification_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_notification_style.css', false, '3.1.8', 'all' );
+        wp_enqueue_style( 'woocommerce_bold_admin_notification_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_notification_style.css', false, '3.1.9', 'all' );
         $class = $this->get_class_by_type($this->type);
         $message = $this->message;
         $type = $this->type;

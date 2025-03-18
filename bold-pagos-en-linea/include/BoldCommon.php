@@ -47,9 +47,6 @@ class BoldCommon {
         if ( class_exists( 'WC_Logger' ) ) {
             $logger = new \WC_Logger();
             $logger->add( 'plugin-bold', $log_message );
-        } else {
-            // Si WooCommerce no está habilitado, usar error_log()
-            error_log( $log_message, 3, WP_CONTENT_DIR . '/bold_button_event_log.txt' );
         }
     }
 
@@ -333,34 +330,12 @@ class BoldCommon {
     }
 
     /**
-     * Generates the HTML script for embedding the Bold payment button.
+     * Retrieves the enabled tags for the Bold payment button script.
      *
-     * @param string $apiKey The API key. Required.
-     * @param float $amount The transaction amount. Optional. Default is 0.
-     * @param string $currency The transaction currency. Optional. Default is 'COP'.
-     * @param string $orderReference The order reference. Optional. Default is an empty string.
-     * @param string $signature The transaction signature. Optional. Default is an empty string.
-     * @param string|null $description The order description. Optional. Default is null.
-     * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
-     * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
-     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.1.8'.
-     * @param string $size The button size. Optional. Default is 'L'.
-     * @return string The HTML script for the payment button.
+     * @return array An array of enabled tags for the Bold payment button script.
      */
-    public static function getButtonScript(
-        $apiKey,
-        $amount = 0,
-        $currency = 'COP',
-        $orderReference = '',
-        $signature = '',
-        $description = null,
-        $redirectionUrl = null,
-        $bold_color_button = 'dark',
-        $woocommerce_bold_version = 'wordpress-3.1.8',
-        $size = 'L'
-        ) : string
-    {
-        $tags_enabled = [
+    public static function getTagsButtonScriptEnabled() : Array {
+        return [
             'script' => [
                 'integrity' => [],
                 'data-bold-button' => [],
@@ -377,6 +352,37 @@ class BoldCommon {
                 'data-image-url' => [],
             ]
         ];
+    }
+
+    /**
+     * Generates the HTML script for embedding the Bold payment button.
+     *
+     * @param string $apiKey The API key. Required.
+     * @param float $amount The transaction amount. Optional. Default is 0.
+     * @param string $currency The transaction currency. Optional. Default is 'COP'.
+     * @param string $orderReference The order reference. Optional. Default is an empty string.
+     * @param string $signature The transaction signature. Optional. Default is an empty string.
+     * @param string|null $description The order description. Optional. Default is null.
+     * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
+     * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.1.9'.
+     * @param string $size The button size. Optional. Default is 'L'.
+     * @return string The HTML script for the payment button.
+     */
+    public static function getButtonScript(
+        $apiKey,
+        $amount = 0,
+        $currency = 'COP',
+        $orderReference = '',
+        $signature = '',
+        $description = null,
+        $redirectionUrl = null,
+        $bold_color_button = 'dark',
+        $woocommerce_bold_version = 'wordpress-3.1.9',
+        $size = 'L'
+        ) : string
+    {
+        $tags_enabled = self::getTagsButtonScriptEnabled();
         $redirectionUrl = $redirectionUrl ? "data-redirection-url='" . esc_attr($redirectionUrl) . "'" : '';
         $description = $description ? "data-description='" . esc_attr($description) . "'" : '';
         $originUrl = self::getOptionKey('origin_url') !== '' ? "data-origin-url='" . esc_attr(self::getOptionKey('origin_url')) . "'" : '';

@@ -3,7 +3,7 @@
  * Plugin Name: Bold pagos en linea 
  * Plugin URI: https://developers.bold.co/pagos-en-linea/boton-de-pagos/plugins/wordpress
  * Description: Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes.
- * Version: 3.1.8
+ * Version: 3.1.9
  * Author: Bold
  * Author URI: http://www.bold.co/
  * Network: true
@@ -17,33 +17,6 @@
 
 if (!defined('ABSPATH')) {
     exit;
-}
-
-//borrar plugin viejo
-$path_old_plugin = plugin_dir_path(__FILE__) . '/../woocommerce-bold';
-if(file_exists($path_old_plugin)){
-    bol_co_deleteDirectoryRecursively($path_old_plugin);
-}
-function bol_co_deleteDirectoryRecursively($directory) {
-    // Check if the directory is valid
-    if (is_dir($directory)) {
-        // Open the directory
-        $items = scandir($directory);
-        foreach ($items as $item) {
-            // Ignore the current and parent directory indicators
-            if ($item !== "." && $item !== "..") {
-                $fullPath = $directory . DIRECTORY_SEPARATOR . $item;
-                // If it's a directory, call the function recursively
-                if (is_dir($fullPath)) {
-                    bol_co_deleteDirectoryRecursively($fullPath);
-                } else {
-                    unlink($fullPath);
-                }
-            }
-        }
-        // Once empty, remove the directory
-        rmdir($directory);
-    }
 }
 
 // Autoload function for classes within the BoldPagosEnLinea namespace
@@ -60,7 +33,7 @@ use BoldPagosEnLinea\BoldConstants;
 
 // Función para registrar y cargar el script de botón de pago
 function bold_co_custom_header_code(): void {
-    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.8', true);
+    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.1.9', true);
     wp_enqueue_script('woocommerce_bold_payment_button_js');
 
     wp_register_script(

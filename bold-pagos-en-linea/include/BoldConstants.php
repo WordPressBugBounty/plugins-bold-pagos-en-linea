@@ -18,7 +18,7 @@ class BoldConstants {
     public static function getTransactionStatus(string $status): string {
         $status_uppercase = strtoupper($status);
         if (isset(self::$TRANSACTION_STATUS[$status_uppercase])) {
-            return __(self::$TRANSACTION_STATUS[$status_uppercase], 'bold-pagos-en-linea');
+            return self::$TRANSACTION_STATUS[$status_uppercase];
         } else {
             return $status;
         }

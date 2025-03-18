@@ -294,25 +294,25 @@ class BoldWidgetElementor extends \Elementor\Widget_Base {
 			$description = $settings["description"] ? esc_attr($settings["description"]) : '';
 			$bold_color_button = esc_attr($settings["color"]);
 			$bold_size_button = esc_attr($settings["size"]);
-			$woocommerce_bold_version = "wordpress-elementor-3.1.8";
+			$woocommerce_bold_version = "wordpress-elementor-3.1.9";
 	
 			$html_tag = [
 				'ordered' => 'ol',
 				'unordered' => 'ul',
 				'other' => 'ul',
 			];
-			echo BoldCommon::getButtonScript(
-				$apiKey,
-				$amount,
-				$currency,
-				$orderReference,
-				$signature,
-				$description,
-				$redirectionUrl,
-				$bold_color_button,
-				$woocommerce_bold_version,
-				$bold_size_button
-			);
+			echo wp_kses(BoldCommon::getButtonScript(
+				esc_attr($apiKey),
+				esc_attr($amount),
+				esc_attr($currency),
+				esc_attr($orderReference),
+				esc_attr($signature),
+				esc_attr($description),
+				esc_attr($redirectionUrl),
+				esc_attr($bold_color_button),
+				esc_attr($woocommerce_bold_version),
+				esc_attr($bold_size_button)
+			), BoldCommon::getTagsButtonScriptEnabled());
 		}
 	}
 
