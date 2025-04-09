@@ -41,16 +41,16 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.1.9', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.2.0', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
-		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.1.9', true );
+		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.2.0', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_basic_js' );
 		wp_localize_script( 'woocommerce_bold_checkout_basic_js', 'BoldPlugin', ['checkoutUrl' => BoldConstants::URL_CHECKOUT]);
 	}
 
 	public function bold_upload_checkout_description(): string {
 		$this->bold_register_scripts();
-		return BoldCommon::uploadFilePhp( 'templates/bold-basic-checkout.php', array( 'test_mode' => $this->get_option( 'test' ) ) );
+		return BoldCommon::loadTemplatePhp( 'bold-basic-checkout.php', array( 'test_mode' => $this->get_option( 'test' ) ) );
 	}
 
     /**
@@ -159,9 +159,15 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			$this->bold_get_async_order_status();
 			if(isset($_SERVER["HTTP_REFERER"])){
 				$sanitized_referer = sanitize_url(wp_unslash($_SERVER["HTTP_REFERER"]));
-				wp_redirect( $sanitized_referer );
-			}else{
-				wp_redirect( home_url() );
+				$sanitized_referer = esc_url_raw($sanitized_referer, ['http', 'https']);
+				
+				if (wp_validate_redirect($sanitized_referer, home_url())) {
+					wp_safe_redirect($sanitized_referer);
+				} else {
+					wp_safe_redirect(home_url());
+				}
+			} else {
+				wp_safe_redirect(home_url());
 			}
 			exit;
 		}
@@ -524,18 +530,18 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.1.9', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.2.0', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
 				'type'        => 'title',
-				'description' => BoldCommon::uploadFilePhp( 'templates/config-fields/config-field.php' ),
+				'description' => BoldCommon::loadTemplatePhp( 'config-fields/config-field.php' ),
 			),
 			'enabled'     => array(
 				'title'       => '',
 				'type'        => 'checkbox',
 				'class'       => 'bold__config__field__woocommerce__input',
-				'description' => BoldCommon::uploadFilePhp( 'templates/config-fields/payment-method-field.php', array(
+				'description' => BoldCommon::loadTemplatePhp( 'config-fields/payment-method-field.php', array(
 					"enabled" => $this->get_option( 'enabled' ),
 					'prefix'  => $this->get_option_custom( 'prefix' )
 				) ),
@@ -569,6 +575,35 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		return $data_billing;
 	}
 
+	private function getTaxes($order) {
+		$taxes_data = [];
+
+		if (!wc_tax_enabled()) {
+			return $taxes_data;
+		}
+	
+		$taxes = $order->get_taxes();
+		
+		if (empty($taxes)) {
+			return $taxes_data;
+		}
+		
+		foreach ($taxes as $tax) {
+			$taxLabel = strtoupper($tax->get_label());
+			$taxAmount = $tax->get_tax_total();
+			
+			$amount_in_cents = $amount_in_cents = number_format(round($taxAmount, 2, PHP_ROUND_HALF_UP), 2, '.', '');
+			
+			$taxKey = in_array($taxLabel, BoldConstants::ALLOWED_TAXES) 
+				? $taxLabel 
+				: 'VAT';
+			
+			$taxes_data[$taxKey] = number_format(($taxes_data[$taxKey] ?? 0) + $amount_in_cents, 2, '.', '');
+		}
+		
+		return $taxes_data;
+	}
+
 	function prepare_data_redirection( $order_id ): array {
 		$order = wc_get_order( $order_id );
 
@@ -588,6 +623,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		$origin_url         = $this->get_option_custom( 'origin_url' ) !== '' ? esc_attr( $this->get_option_custom( 'origin_url' ) ) : $order->get_cancel_order_url_raw();
 		/* translators: %s the custom short description for payments in checkout processed with Bold */
 		$description		= sprintf(__('Pago de mi pedido #%s', 'bold-pagos-en-linea'), $order_id);
+		$taxes 				= $this->getTaxes( $order );
 
 		$return_url = $this->get_return_url( $order );
 		if ( substr( $return_url, 0, 4 ) != "http" ) {
@@ -603,13 +639,15 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'integrity-signature'	=> $signature,
 			'redirection-url'  		=> $return_url,
 			'origin-url'       		=> $origin_url,
-			'integration-type' 		=> 'wordpress-woocommerce-3.1.9',
+			'integration-type' 		=> 'wordpress-woocommerce-3.2.0',
 			'customer-data'    		=> wp_json_encode($data_billing_order['customer_data']) ,
 			'billing-address'  		=> wp_json_encode($data_billing_order['billing_address']),
 			'opening-time'	   		=> (int) (microtime(true) * 1000000),
 		);
 
-		ksort($data_order_bold);
+		if($taxes && count($taxes)>0){
+			$data_order_bold['tax'] = wp_json_encode($taxes);
+		}
 
 		$stock_is_enabled = wc_string_to_bool( get_option( 'woocommerce_manage_stock', 'yes' ) );
 		$held_duration = absint(get_option( 'woocommerce_hold_stock_minutes',0));
@@ -625,6 +663,8 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		if(!empty($image_url)){
 			$data_order_bold['image-url'] = esc_url_raw($image_url);
 		}
+
+		ksort($data_order_bold);
 
 		return $data_order_bold;
 	}

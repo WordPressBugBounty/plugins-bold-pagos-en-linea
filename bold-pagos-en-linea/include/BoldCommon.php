@@ -59,16 +59,61 @@ class BoldCommon {
         ]);
     }
 
+    private static function getListTemplatesAllowed(): array {
+        // Ruta base del directorio de plantillas
+        $templates_base_dir = realpath(WP_PLUGIN_DIR . "/" . self::getPluginPath() . "/templates");
+    
+        // Verificar que el directorio base es válido
+        if (!$templates_base_dir || !is_dir($templates_base_dir)) {
+            return [];
+        }
+    
+        try {
+            $directory_iterator = new \RecursiveDirectoryIterator($templates_base_dir, \FilesystemIterator::SKIP_DOTS);
+            $iterator = new \RecursiveIteratorIterator($directory_iterator);
+        } catch (\Exception $e) {
+            return [];
+        }
+    
+        // Obtener todos los archivos .php en el directorio y subdirectorios
+        $allowed_templates = [];
+        foreach ($iterator as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                // Guardar la ruta relativa al directorio de plantillas
+                $allowed_templates[] = ltrim(str_replace('\\', '/', substr($file->getPathname(), strlen($templates_base_dir) + 1)), '/');
+            }
+        }
+    
+        return $allowed_templates;
+    }
+    
     // Cargar archivos PHP
-    public static function uploadFilePhp( string $template_name, array $params = [] ): string {
+    public static function loadTemplatePhp( string $template_name, array $params = [] ): string {
+        // Obtener lista de plantillas permitidas
+        $allowed_templates = self::getListTemplatesAllowed();
+    
+        // Validar que el archivo solicitado esté en la lista permitida
+        if (!in_array($template_name, $allowed_templates, true)) {
+            return '';
+        }
+    
+        // Construir ruta completa
+        $file_path = realpath(WP_PLUGIN_DIR . "/" . self::getPluginPath() . "/templates/" . $template_name);
+    
+        // Verificar que el archivo existe
+        if (!$file_path || !is_file($file_path)) {
+            return '';
+        }
+    
         ob_start();
-        include( WP_PLUGIN_DIR . "/" . self::getPluginPath() . "/" . $template_name );
+        include $file_path;
         $content = ob_get_clean();
-        return self::tinyHtmlMinifier( $content, [
+    
+        return self::tinyHtmlMinifier($content, [
             'collapse_whitespace' => true,
             'disable_comments'    => true,
         ]);
-    }
+    }    
 
     // Obtener ID de la orden en checkout
     public static function getOrderIdCheckout(): ?string {
@@ -365,7 +410,7 @@ class BoldCommon {
      * @param string|null $description The order description. Optional. Default is null.
      * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
      * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
-     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.1.9'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.2.0'.
      * @param string $size The button size. Optional. Default is 'L'.
      * @return string The HTML script for the payment button.
      */
@@ -378,7 +423,7 @@ class BoldCommon {
         $description = null,
         $redirectionUrl = null,
         $bold_color_button = 'dark',
-        $woocommerce_bold_version = 'wordpress-3.1.9',
+        $woocommerce_bold_version = 'wordpress-3.2.0',
         $size = 'L'
         ) : string
     {

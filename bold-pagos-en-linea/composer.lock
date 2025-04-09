@@ -4,17 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f885f4dbb1eb29937895b6c7b34e7f19",
+    "content-hash": "941966e1157cb7157ff844a131d22e3a",
     "packages": [],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "woocommerce/qit-cli",
+            "version": "0.8.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/woocommerce/qit-cli.git",
+                "reference": "bd17555d648f88bbf2f5c7edb83b87bb65ca408c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/woocommerce/qit-cli/zipball/bd17555d648f88bbf2f5c7edb83b87bb65ca408c",
+                "reference": "bd17555d648f88bbf2f5c7edb83b87bb65ca408c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": "^7.2.5 | ^8"
+            },
+            "bin": [
+                "qit"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "description": "A command line interface for WooCommerce Quality Insights Toolkit (QIT).",
+            "support": {
+                "issues": "https://github.com/woocommerce/qit-cli/issues",
+                "source": "https://github.com/woocommerce/qit-cli/tree/0.8.7"
+            },
+            "time": "2025-03-20T02:10:12+00:00"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.4"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

@@ -47,19 +47,19 @@ class BoldShortcode
         $style_parts = isset($attrs["color"]) ? explode('-', esc_attr($attrs["color"])) : ['dark', 'L'];
         $color_button = $style_parts[0];
         $size_button = isset($style_parts[1]) ? esc_attr($style_parts[1]) : 'L';
-        $woocommerce_bold_version = "wordpress-shortcode-3.1.9";
+        $woocommerce_bold_version = "wordpress-shortcode-3.2.0";
 
-        return BoldCommon::getButtonScript(
-            $apiKey,
-            $amount,
-            $currency,
-            $orderReference,
-            $signature,
-            $description,
-            $redirectionUrl,
-            $color_button,
-            $woocommerce_bold_version,
-            $size_button
-        );
+        return wp_kses(BoldCommon::getButtonScript(
+            esc_attr($apiKey),
+            esc_attr($amount),
+            esc_attr($currency),
+            esc_attr($orderReference),
+            esc_attr($signature),
+            esc_attr($description),
+            esc_attr($redirectionUrl),
+            esc_attr($color_button),
+            esc_attr($woocommerce_bold_version),
+            esc_attr($size_button)
+        ), BoldCommon::getTagsButtonScriptEnabled());
     }
 }

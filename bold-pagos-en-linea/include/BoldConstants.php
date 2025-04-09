@@ -39,6 +39,11 @@ class BoldConstants {
         'settings',
         'image_checkout_url',
     );
+
+    const ALLOWED_TAXES = [
+        'VAT',
+        'IAC',
+    ];
     
     const TAGS_ENABLED = array(
         'a' => array(
