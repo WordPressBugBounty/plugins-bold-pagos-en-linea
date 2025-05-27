@@ -256,28 +256,14 @@ class BoldSettingModel {
 	public function verifyWebhookRemote( array $postData ): void {
 		if(isset($postData['prod_api_key'])){
 			$prod_api_key = sanitize_text_field($postData['prod_api_key']);
-			$webhookUrl = add_query_arg( 'wc-api', 'bold_co', trailingslashit( get_home_url() ) );
-			$remote_webhoooks = BoldCommon::getWebhooksRemote($prod_api_key);
-			if(is_array($remote_webhoooks)){
-				$filtered_webhooks = array_filter($remote_webhoooks, function($webhook) use ($webhookUrl) {
-					return $webhook['url'] === $webhookUrl;
-				});
-				if(count($filtered_webhooks)==0){
-					/* translators: %1$s the webhook API url that automatically updates orders processed with Bold */
-					$message_error_translate = __('Tu webhook aun no esta configurado, inicia sesión en Bold y configura el webhook %1$s', 'bold-pagos-en-linea');
-					$message_error = sprintf(
-						$message_error_translate,
-						$webhookUrl
-					);
-					throw new \InvalidArgumentException( esc_html($message_error) );
-				}
-
-			}else{
+			$webhook_url = add_query_arg( 'wc-api', 'bold_co', trailingslashit( get_home_url() ) );
+			$is_configured = BoldCommon::getVerifyWebhookRemote($prod_api_key, $webhook_url);
+			if(!$is_configured){
 				/* translators: %1$s the webhook API url that automatically updates orders processed with Bold */
-				$message_error_translate = __('No tienes ningun webhook configurado, inicia sesión en Bold y configura el webhook %1$s', 'bold-pagos-en-linea');
+				$message_error_translate = __('Tu webhook aun no esta configurado, inicia sesión en Bold y configura el webhook %1$s', 'bold-pagos-en-linea');
 				$message_error = sprintf(
 					$message_error_translate,
-					$webhookUrl
+					$webhook_url
 				);
 				throw new \InvalidArgumentException( esc_html($message_error) );
 			}

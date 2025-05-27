@@ -50,17 +50,17 @@ class BoldMenuAdmin
     private function addAssetsAdmin(): void
     {
         wp_register_script( 'woocommerce_bold_admin_panel_js', plugins_url( '/../assets/js/admin-panel.js', __FILE__ ),
-            array('bold-assets-js', 'jquery'), '3.2.0', true );
+            array('bold-assets-js', 'jquery'), '3.2.1', true );
         wp_enqueue_script( 'woocommerce_bold_admin_panel_js' );
-        wp_enqueue_style( 'woocommerce_bold_admin_panel_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_panel_style.css', false, '3.2.0', 'all' );
+        wp_enqueue_style( 'woocommerce_bold_admin_panel_css', plugin_dir_url( __FILE__ ) . '../assets/css/bold_admin_panel_style.css', false, '3.2.1', 'all' );
 
-        wp_register_script( 'woocommerce_bold_icons-dark-ui', BoldConstants::URL_CHECKOUT.'/library/ui-kit.js?layout=vertical&type=slider&target=bold-config-dark-icons', null, '3.2.0', true );
+        wp_register_script( 'woocommerce_bold_icons-dark-ui', BoldConstants::URL_CHECKOUT.'/library/ui-kit.js?layout=vertical&type=slider&target=bold-config-dark-icons', null, '3.2.1', true );
         wp_enqueue_script( 'woocommerce_bold_icons-dark-ui' );
-        wp_register_script( 'woocommerce_bold_icons-light-ui', BoldConstants::URL_CHECKOUT.'/library/ui-kit.js?layout=vertical&type=slider&theme=dark&target=bold-config-light-icons', null, '3.2.0', true );
+        wp_register_script( 'woocommerce_bold_icons-light-ui', BoldConstants::URL_CHECKOUT.'/library/ui-kit.js?layout=vertical&type=slider&theme=dark&target=bold-config-light-icons', null, '3.2.1', true );
         wp_enqueue_script( 'woocommerce_bold_icons-light-ui' );
 
         wp_enqueue_media();
-        wp_enqueue_script('woocommerce_bold_media_uploader', plugins_url( '/../assets/js/bold-media-uploader.js', __FILE__ ), ['jquery', 'wp-i18n'], '3.2.0', true);
+        wp_enqueue_script('woocommerce_bold_media_uploader', plugins_url( '/../assets/js/bold-media-uploader.js', __FILE__ ), ['jquery', 'wp-i18n'], '3.2.1', true);
         wp_localize_script('woocommerce_bold_media_uploader', 'BoldPlugin', ['pluginUrl' => plugin_dir_url(__DIR__)]);
     }
 

@@ -5,7 +5,7 @@
 - Requires at least: 5.5.2
 - Requires PHP: 7.4
 - Tested up to: 6.8
-- Stable tag: 3.2.0
+- Stable tag: 3.2.1
 - Network: true
 - License: GPLv3 or later
 - License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -29,12 +29,8 @@ Este plugin establece conexiones externas con Bold para integrar funcionalidades
   - Descripción: Esta URL se utiliza para actualizar el estado de la transacción de las órdenes creadas a través de Bold. Permite mantener sincronizados los registros de transacciones y proporcionar una experiencia fluida al usuario final.
 
 - Validación Webhook configurado en panel de comercios
-   - URL: https://merchants-cde.api.bold.co/merchants/myself/configurations/webhook
-   - Descripción: Esta URL se utiliza para listar los webhooks configurados por el comercio y validar si el actual del wordpress existe en ese listado, generando una alerta en la configuración.
-
-- Generar URL ofuscada para redirigir a pagar en Checkout de Bold
-   - URL: https://online-cde.api.bold.co/ecommerce/proxy/v1/obfuscate
-   - Descripción: Esta URL valida los datos de la compra a realizar y genera una url segura para redirigir al usuario a finalizar la compra de la orden realizada en WordPress con WooCommerce.
+   - URL: https://online-cde.api.bold.co/ecommerce/v1/verify-webhook
+   - Descripción: Esta URL se utiliza para verificar el webhook este configurado por el comercio, generando una alerta en la configuración.
 
 Para más información, visita https://bold.co. Conoce nuestros términos y condiciones [aquí](https://bold.co/legal) y nuestro portal de desarrolladores [aquí](https://developers.bold.co).
 
@@ -117,14 +113,15 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Upgrade Notice ==
 
-Última versión 3.2.0
+Última versión 3.2.1
 
 == Changelog ==
 
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
-### 3.2.0
+### 3.2.1
 
+- Mejoras en seguridad y experiencia de usuario.
 - Soporte de impuestos con WooCommerce con los impuestos IVA e IAC Colombianos.
 
 == Créditos ==

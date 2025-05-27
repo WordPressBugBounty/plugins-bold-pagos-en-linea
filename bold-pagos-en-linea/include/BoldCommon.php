@@ -192,34 +192,30 @@ class BoldCommon {
     }
 
     // Obtener los webhooks desde el servidor remoto
-    public static function getWebhooksRemote( string $api_key ): array {
+    public static function getVerifyWebhookRemote( string $api_key, string $webhook_url ): bool {
         try {
-            $webhooks_url = 'https://merchants-cde.api.bold.co/merchants/myself/configurations/webhook';
+            $webhooks_url = BoldConstants::URL_API_ONLINE . '/ecommerce/v1/verify-webhook?url='.$webhook_url;
             $response = wp_remote_get( $webhooks_url, [
                 'headers' => ['Authorization' => 'x-api-key ' . $api_key]
             ]);
     
             if ( ( !is_wp_error( $response ) ) && ( 200 === wp_remote_retrieve_response_code( $response ) ) ) {
-                $responseBody = json_decode( $response['body'], true );
-                if ( json_last_error() === JSON_ERROR_NONE ) {
-                    return $responseBody;
-                } else {
-                    return [];
-                }
+                return true;
+            } elseif ( !is_wp_error( $response ) && ( 404 === wp_remote_retrieve_response_code( $response ) )  ) {
+                return false;
             } else {
                 $responseBody = ( is_array( $response ) ) ? json_decode( $response['body'], true ) : null;
                 if ( json_last_error() === JSON_ERROR_NONE && is_array( $responseBody ) && $responseBody['hint'] === 'INVALID_TOKEN' ) {
                     throw new \InvalidArgumentException( esc_html__( 'Tus llaves de identidad y secreta son inválidas, revisa la información.', 'bold-pagos-en-linea' ) );
                 } else {
-                    $webhookUrl = add_query_arg( 'wc-api', 'bold_co', trailingslashit( get_home_url() ) );
-                    return [ [ 'url' => $webhookUrl ] ];
+                    return false;
                 }
             }
         } catch (\InvalidArgumentException $e) {
             throw new \InvalidArgumentException( esc_html( $e->getMessage() ) );
         } catch (\Throwable $th) {
-            $webhookUrl = add_query_arg( 'wc-api', 'bold_co', trailingslashit( get_home_url() ) );
-            return [ [ 'url' => $webhookUrl ] ];
+            $this->logEvent( 'Error al obtener los webhooks remotos: ' . $th->getMessage() );
+            return false;
         }
     }
 
@@ -410,7 +406,7 @@ class BoldCommon {
      * @param string|null $description The order description. Optional. Default is null.
      * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
      * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
-     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.2.0'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.2.1'.
      * @param string $size The button size. Optional. Default is 'L'.
      * @return string The HTML script for the payment button.
      */
@@ -423,7 +419,7 @@ class BoldCommon {
         $description = null,
         $redirectionUrl = null,
         $bold_color_button = 'dark',
-        $woocommerce_bold_version = 'wordpress-3.2.0',
+        $woocommerce_bold_version = 'wordpress-3.2.1',
         $size = 'L'
         ) : string
     {

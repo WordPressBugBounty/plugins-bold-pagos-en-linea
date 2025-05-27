@@ -25,6 +25,7 @@ class BoldConstants {
     }
 
     const URL_CHECKOUT = "https://checkout.bold.co";
+    const URL_API_ONLINE = "https://online-cde.api.bold.co";
 
     const COLUMNS_KEYS = array(
         'test',

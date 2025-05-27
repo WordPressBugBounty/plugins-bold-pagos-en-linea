@@ -1,5 +1,10 @@
 *** Bold pagos en linea ***
 
+2025-05-27 - version 3.2.1
+
+Security - Updated library versions for security.
+Security - Update internal verificación webhook in API.
+
 2025-04-08 - version 3.2.0
 
 Added - Support of taxes with WooCommerce with the VAT/IVA and IAC Colombian taxes.
