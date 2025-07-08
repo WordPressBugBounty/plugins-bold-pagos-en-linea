@@ -20,6 +20,6 @@
         "php": ">=7.4"
     },
     "require-dev": {
-        "woocommerce/qit-cli": "^0.8.7"
+        "woocommerce/qit-cli": "^0.10.0"
     }
 }

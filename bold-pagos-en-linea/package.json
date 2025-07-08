@@ -11,12 +11,14 @@
     "author": "Bold",
     "license": "ISC",
     "devDependencies": {
-        "@wordpress/scripts": "^30.17.0"
+        "@wordpress/scripts": "^30.19.0"
     },
     "dependencies": {
         "notiflix": "^3.2.8"
     },
     "overrides": {
-        "ansi-html": "npm:ansi-html-community@^0.0.8"
+        "@babel/runtime": "^7.27.6",
+        "ansi-html": "npm:ansi-html-community@^0.0.8",
+        "webpack-dev-server": "^5.2.2"
     }
 }
