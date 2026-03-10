@@ -5,7 +5,7 @@ Requires at least: 5.5.2
 Tested up to: 6.8
 Requires PHP: 7.4
 Network: true
-Stable tag: 3.2.2
+Stable tag: 3.2.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,11 +100,11 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Changelog ==
 
-### 3.2.2
+### 3.2.3
 
-- Soporte de impuestos con WooCommerce con los impuestos IVA e IAC Colombianos.
+- Mantenimiento general y optimización de funciones.
 
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
 == Upgrade Notice ==
-Última versión 3.2.2
+Última versión 3.2.3

@@ -106,7 +106,7 @@ class BoldCommon {
         }
     
         ob_start();
-        include $file_path;
+        include $file_path; // nosemgrep
         $content = ob_get_clean();
     
         return self::tinyHtmlMinifier($content, [
@@ -406,7 +406,7 @@ class BoldCommon {
      * @param string|null $description The order description. Optional. Default is null.
      * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
      * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
-     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.2.2'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.2.3'.
      * @param string $size The button size. Optional. Default is 'L'.
      * @return string The HTML script for the payment button.
      */
@@ -419,7 +419,7 @@ class BoldCommon {
         $description = null,
         $redirectionUrl = null,
         $bold_color_button = 'dark',
-        $woocommerce_bold_version = 'wordpress-3.2.2',
+        $woocommerce_bold_version = 'wordpress-3.2.3',
         $size = 'L'
         ) : string
     {

@@ -1,5 +1,9 @@
 *** Bold pagos en linea ***
 
+2025-11-12 - version 3.2.3
+
+Security - Updated library versions for security and minors fixes.
+
 2025-05-27 - version 3.2.2
 
 Security - Updated libraries versions for security.
