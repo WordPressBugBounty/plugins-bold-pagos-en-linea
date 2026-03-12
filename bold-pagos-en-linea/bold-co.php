@@ -3,7 +3,7 @@
  * Plugin Name: Bold pagos en linea 
  * Plugin URI: https://developers.bold.co/pagos-en-linea/boton-de-pagos/plugins/wordpress
  * Description: Recibe pagos en tu tienda de forma segura con los métodos de pago más usados y con la mejor experiencia para tus clientes.
- * Version: 3.2.3
+ * Version: 3.3.1
  * Author: Bold
  * Author URI: http://www.bold.co/
  * Network: true
@@ -34,7 +34,7 @@ use BoldPagosEnLinea\BoldConstants;
 
 // Función para registrar y cargar el script de botón de pago
 function bold_co_custom_header_code(): void {
-    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.2.3', true);
+    wp_register_script('woocommerce_bold_payment_button_js', BoldConstants::URL_CHECKOUT.'/library/boldPaymentButton.js', [], '3.3.1', true);
     wp_enqueue_script('woocommerce_bold_payment_button_js');
 
     wp_register_script(
@@ -44,7 +44,6 @@ function bold_co_custom_header_code(): void {
         filemtime(plugin_dir_path(__FILE__) . './build/index.js'),
         true
     );
-    wp_enqueue_script( 'bold-assets-js' );
 
     wp_localize_script('bold-assets-js', 'boldBlockData', array(
         'iconUrl' => plugins_url('./assets/img/admin-panel/bold_co_button_light.png', __FILE__),

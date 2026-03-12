@@ -2,20 +2,20 @@
 Contributors: boldplugins
 Tags: woocommerce, payment gateway, bold, ecommerce, payment method
 Requires at least: 5.5.2
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
 Network: true
-Stable tag: 3.2.3
+Stable tag: 3.3.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Recibe pagos en tu tienda de forma segura con diferentes métodos de pago confiables.
 
 == Description ==
-Intégralo a tu página web sin complicaciones ni papeleos. Recibe pagos con tarjetas nacionales e internacionales, PSE y billeteras digitales de manera sencilla. Recibe el dinero de tus ventas al siguiente día hábil en la cuenta que escojas, sin importar el banco.
+Intégralo a tu página web sin complicaciones ni papeleos. Recibe pagos con tarjetas nacionales e internacionales, PSE, QR Bre-B y billeteras digitales de manera sencilla. Recibe el dinero de tus ventas al siguiente día hábil en la cuenta que escojas, sin importar el banco.
 
 - Intégralo a tu página web sin complicaciones ni papeleos.
-- Recibe pagos con tarjetas nacionales e internacionales, PSE y billeteras digital
+- Recibe pagos con tarjetas nacionales e internacionales, PSE, QR Bre-B y billeteras digital
 - Recibe el dinero de tus ventas al siguiente día hábil en la cuenta que escojas.
 
 ### Tarifas que se adaptan a cada tipo de negocio
@@ -24,7 +24,7 @@ Conoce nuestras tarifas para negocios que venden hasta $20 millones con Bold al 
 
 Si tus ventas son mayores, te podemos ofrecer una tarifa especial.
 
-Para más información, visita https://bold.co. Conoce nuestros términos y condiciones [aquí](https://bold.co/legal) y nuestro portal de desarrolladores [aquí](https://developers.bold.co).
+Para más información, visita [bold.co](https://bold.co). Conoce nuestros términos y condiciones [aquí](https://bold.co/legal) y nuestro portal de desarrolladores [aquí](https://developers.bold.co).
 
 ### Características Destacadas
 
@@ -100,11 +100,12 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Changelog ==
 
-### 3.2.3
+### 3.3.1
 
-- Mantenimiento general y optimización de funciones.
+- Mejoras en la experiencia de usuario y optimización del flujo de pago.
+- Actualización y mejoras de seguridad.
 
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
 == Upgrade Notice ==
-Última versión 3.2.3
+Última versión 3.3.1

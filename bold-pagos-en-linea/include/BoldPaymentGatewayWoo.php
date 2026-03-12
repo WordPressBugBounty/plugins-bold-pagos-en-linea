@@ -41,9 +41,9 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.2.3', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.3.1', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
-		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.2.3', true );
+		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.3.1', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_basic_js' );
 		wp_localize_script( 'woocommerce_bold_checkout_basic_js', 'BoldPlugin', ['checkoutUrl' => BoldConstants::URL_CHECKOUT]);
 	}
@@ -530,7 +530,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.2.3', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.3.1', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -575,6 +575,24 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		return $data_billing;
 	}
 
+	function get_ofuscated_payer_metadata($order_id)
+	{
+		$order = wc_get_order( $order_id );
+		$data_order_bold = array();
+		$data_billing_order = $this->get_data_billing_order($order);
+		if (!empty($data_billing_order['customer_data'])) {
+			$data_order_bold['customer-data'] = wp_json_encode($data_billing_order['customer_data']);
+		}
+		if (!empty($data_billing_order['billing_address'])) {
+			$data_order_bold['billing-address'] = wp_json_encode($data_billing_order['billing_address']);
+		}
+		if (empty($data_order_bold)) {
+			return null;
+		}
+		ksort($data_order_bold);
+		return urlencode(BoldCommon::encodeParamsWithDelimiter($data_order_bold));
+	}
+
 	private function getTaxes($order) {
 		$taxes_data = [];
 
@@ -587,86 +605,111 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		if (empty($taxes)) {
 			return $taxes_data;
 		}
-		
+
+		$aggregated = [];
 		foreach ($taxes as $tax) {
 			$taxLabel = strtoupper($tax->get_label());
-			$taxAmount = $tax->get_tax_total();
-			
-			$amount_in_cents = $amount_in_cents = number_format(round($taxAmount, 2, PHP_ROUND_HALF_UP), 2, '.', '');
+			$taxAmount = round((float) $tax->get_tax_total(), 2, PHP_ROUND_HALF_UP);
 			
 			$taxKey = in_array($taxLabel, BoldConstants::ALLOWED_TAXES) 
 				? $taxLabel 
 				: 'VAT';
 			
-			$taxes_data[$taxKey] = number_format(($taxes_data[$taxKey] ?? 0) + $amount_in_cents, 2, '.', '');
+			if (!isset($aggregated[$taxKey])) {
+				$aggregated[$taxKey] = 0;
+			}
+			$aggregated[$taxKey] += $taxAmount;
 		}
-		
+
+		$total_amount = (float) $order->get_total();
+		foreach ($aggregated as $type => $value) {
+			$base = round($total_amount - $value, 2, PHP_ROUND_HALF_UP);
+			$taxes_data[] = [
+				'type'  => $type,
+				'value' => $value,
+				'base'  => $base,
+			];
+		}
+
 		return $taxes_data;
 	}
 
 	function prepare_data_redirection( $order_id ): array {
 		$order = wc_get_order( $order_id );
 
-		$currency           = $order->get_currency();
+		$currency = $order->get_currency();
 
-		if($currency === 'COP'){
-			$amount_in_cents    = number_format(round($order->get_total(), 0), 0, '.', '');
-		}else{
-			$amount_in_cents    = number_format(round($order->get_total(), 2), 2, '.', '');
+		if ($currency === 'COP') {
+			$amount_in_cents = number_format(round($order->get_total(), 0), 0, '.', '');
+		} else {
+			$amount_in_cents = number_format(round($order->get_total(), 2), 2, '.', '');
 		}
 
-		$auth_token         = $this->get_option_custom( 'test' ) === 'yes' ? esc_attr( $this->get_option_custom( 'test_api_key' ) ) : esc_attr( $this->get_option_custom( 'prod_api_key' ) );
-		$order_reference    = $this->get_option_custom( 'test' ) === 'yes' ? $this->test_prefix . '~' . esc_attr( $this->get_option_custom( 'prefix' ) ) . "~" . $order_id : esc_attr( $this->get_option_custom( 'prefix' ) ) . "~" . $order_id;
-		$secret_key         = $this->get_option_custom( 'test' ) === 'yes' ? $this->get_option_custom( 'test_secret_key' ) : $this->get_option_custom( 'prod_secret_key' );
-		$signature          = esc_attr( hash( 'sha256', "{$order_reference}{$amount_in_cents}{$currency}{$secret_key}" ) );
-		$data_billing_order = $this->get_data_billing_order( $order );
-		$origin_url         = $this->get_option_custom( 'origin_url' ) !== '' ? esc_attr( $this->get_option_custom( 'origin_url' ) ) : $order->get_cancel_order_url_raw();
-		/* translators: %s the custom short description for payments in checkout processed with Bold */
-		$description		= sprintf(__('Pago de mi pedido #%s', 'bold-pagos-en-linea'), $order_id);
-		$taxes 				= $this->getTaxes( $order );
+		$is_test        = $this->get_option_custom('test') === 'yes';
+		$auth_token     = $is_test ? esc_attr($this->get_option_custom('test_api_key')) : esc_attr($this->get_option_custom('prod_api_key'));
+		$secret_key     = $is_test ? $this->get_option_custom('test_secret_key') : $this->get_option_custom('prod_secret_key');
+		$order_reference = $is_test
+			? $this->test_prefix . '~' . esc_attr($this->get_option_custom('prefix')) . '~' . $order_id
+			: esc_attr($this->get_option_custom('prefix')) . '~' . $order_id;
 
-		$return_url = $this->get_return_url( $order );
-		if ( substr( $return_url, 0, 4 ) != "http" ) {
+		$integrity_key = hash('sha256', "{$order_reference}{$amount_in_cents}{$currency}{$secret_key}");
+
+		/* translators: %s the custom short description for payments in checkout processed with Bold */
+		$description = sprintf(__('Pago de mi pedido #%s', 'bold-pagos-en-linea'), $order_id);
+
+		$return_url = $this->get_return_url($order);
+		if (substr($return_url, 0, 4) != "http") {
 			$return_url = wc_get_checkout_url() . $return_url;
 		}
 
-		$data_order_bold = array(
-			'currency'         		=> $currency,
-			'api-key'          		=> $auth_token,
-			'amount'  		   		=> $amount_in_cents,
-			'order-id'  	   		=> $order_reference,
-			'description'	   		=> $description,
-			'integrity-signature'	=> $signature,
-			'redirection-url'  		=> $return_url,
-			'origin-url'       		=> $origin_url,
-			'integration-type' 		=> 'wordpress-woocommerce-3.2.3',
-			'customer-data'    		=> wp_json_encode($data_billing_order['customer_data']) ,
-			'billing-address'  		=> wp_json_encode($data_billing_order['billing_address']),
-			'opening-time'	   		=> (int) (microtime(true) * 1000000),
-		);
+		$webhook_url = add_query_arg( 'wc-api', 'bold_co', trailingslashit( get_home_url() ) );
 
-		if($taxes && count($taxes)>0){
-			$data_order_bold['tax'] = wp_json_encode($taxes);
+		$amount_data = [
+			'total_amount' => $amount_in_cents,
+			'currency'     => $currency,
+		];
+
+		$taxes = $this->getTaxes($order);
+		if (!empty($taxes)) {
+			$amount_data['taxes'] = $taxes;
 		}
 
-		$stock_is_enabled = wc_string_to_bool( get_option( 'woocommerce_manage_stock', 'yes' ) );
-		$held_duration = absint(get_option( 'woocommerce_hold_stock_minutes',0));
-		if($stock_is_enabled && $held_duration>=5){
-			$held_duration = get_option( 'woocommerce_hold_stock_minutes' );
+		$device_fingerprint = BoldCommon::getServerSideFingerprint();
+
+		$data_order_bold = [
+			'amount'           => $amount_data,
+			'integrity_key'    => $integrity_key,
+			'reference'        => $order_reference,
+			'description'      => $description,
+			'callback_url'     => $return_url,
+			'integration_type' => 'wordpress-woocommerce-3.3.1',
+			'webhook_url'      => $webhook_url,
+			'device_fingerprint' => $device_fingerprint,
+		];
+
+		$origin_url = $this->get_option_custom('origin_url') !== '' ? esc_attr($this->get_option_custom('origin_url')) : $order->get_cancel_order_url_raw();
+		if (!empty($origin_url)) {
+			$data_order_bold['origin_url'] = $origin_url;
+		}
+
+		$stock_is_enabled = wc_string_to_bool(get_option('woocommerce_manage_stock', 'yes'));
+		$held_duration = absint(get_option('woocommerce_hold_stock_minutes', 0));
+		if ($stock_is_enabled && $held_duration >= 5) {
 			$current_nanoseconds = microtime(true) * 1e9;
 			$held_duration_nanoseconds = $held_duration * 60 * 1e9;
 			$expiration_date = $current_nanoseconds + $held_duration_nanoseconds;
-			$data_order_bold['expiration-date'] = number_format($expiration_date, 0, '.', '');
+			$data_order_bold['expiration_date'] = number_format($expiration_date, 0, '.', '');
 		}
 
-		$image_url = $this->getImageForCheckout( $order );
-		if(!empty($image_url)){
-			$data_order_bold['image-url'] = esc_url_raw($image_url);
+		$image_url = $this->getImageForCheckout($order);
+		if (!empty($image_url)) {
+			$data_order_bold['image_url'] = esc_url_raw($image_url);
 		}
 
-		ksort($data_order_bold);
-
-		return $data_order_bold;
+		return [
+			'api_key' => $auth_token,
+			'payload' => $data_order_bold,
+		];
 	}
 
 	// Función interna para Woocommerce
@@ -679,14 +722,19 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	
 			$params = $this->prepare_data_redirection( $order_id );
 
-			$data_url_redirect = BoldCommon::generateObfuscatedUrl($params);
+			$redirect_url = BoldCommon::createPaymentLink($params['api_key'], $params['payload']);
 
-			if(empty($data_url_redirect)){
+			if(empty($redirect_url)){
 				throw new \Exception("Empty url redirect checkout");
 			}else{
+				$ofuscatded_payer_metadata = $this->get_ofuscated_payer_metadata($order_id);
+				if (!empty($ofuscatded_payer_metadata)) {
+					$redirect_url = add_query_arg('pf', $ofuscatded_payer_metadata, $redirect_url);
+				}
+
 				return array(
 					'result'   => 'success',
-					'redirect' => $data_url_redirect
+					'redirect' => $redirect_url
 				);
 			}
 		} catch (\Throwable $th) {

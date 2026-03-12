@@ -202,20 +202,86 @@ class BoldCommon {
             if ( ( !is_wp_error( $response ) ) && ( 200 === wp_remote_retrieve_response_code( $response ) ) ) {
                 return true;
             } elseif ( !is_wp_error( $response ) && ( 404 === wp_remote_retrieve_response_code( $response ) )  ) {
+                self::logEvent( 'Webhook no configurado: "' . $webhooks_url . '"' );
                 return false;
             } else {
                 $responseBody = ( is_array( $response ) ) ? json_decode( $response['body'], true ) : null;
                 if ( json_last_error() === JSON_ERROR_NONE && is_array( $responseBody ) && $responseBody['hint'] === 'INVALID_TOKEN' ) {
                     throw new \InvalidArgumentException( esc_html__( 'Tus llaves de identidad y secreta son inválidas, revisa la información.', 'bold-pagos-en-linea' ) );
                 } else {
+                    self::logEvent( 'Error al validar el webhook: "' . ( is_array( $response ) ? json_encode($response ) : $response ) . '"' );
                     return false;
                 }
             }
         } catch (\InvalidArgumentException $e) {
             throw new \InvalidArgumentException( esc_html( $e->getMessage() ) );
         } catch (\Throwable $th) {
-            $this->logEvent( 'Error al obtener los webhooks remotos: ' . $th->getMessage() );
+            self::logEvent( 'Error al validar el webhook: ' . $th->getMessage() );
             return false;
+        }
+    }
+
+    /**
+     * Calls Bold API to create a payment link.
+     *
+     * @param string $api_key The API key for authentication.
+     * @param array $payload The payment data payload.
+     * @return string|null The redirect URL from Bold, or null on failure.
+     */
+    public static function createPaymentLink(string $api_key, array $payload): ?string {
+        $url = BoldConstants::URL_API_ONLINE . '/v2/payment-btn';
+
+        try {
+            $response = wp_remote_post($url, [
+                'headers' => [
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'x-api-key ' . $api_key,
+                ],
+                'body'    => wp_json_encode($payload),
+                'timeout' => 30,
+            ]);
+
+            if (is_wp_error($response)) {
+                self::logEvent('Error al crear link de pago Bold: ' . $response->get_error_message());
+                return null;
+            }
+
+            $response_code = wp_remote_retrieve_response_code($response);
+            $body = wp_remote_retrieve_body($response);
+            $body_decoded = json_decode($body, true);
+
+            if ($response_code === 200 || $response_code === 201) {
+                if (isset($body_decoded['payload']['url'])) {
+                    return $body_decoded['payload']['url'];
+                }
+                if (isset($body_decoded['url'])) {
+                    return $body_decoded['url'];
+                }
+                self::logEvent('Respuesta exitosa de Bold pero sin URL de redirección: ' . $body);
+                return null;
+            }
+
+            $error_message = '';
+            if (is_array($body_decoded) && isset($body_decoded['errors']) && is_array($body_decoded['errors'])) {
+                $error_parts = [];
+                foreach ($body_decoded['errors'] as $error) {
+                    $code = isset($error['code']) ? $error['code'] : 'UNKNOWN';
+                    $msg  = isset($error['errors']) ? $error['errors'] : 'Sin detalle';
+                    $error_parts[] = "[{$code}] {$msg}";
+                }
+                $error_message = implode(' | ', $error_parts);
+            } elseif (is_array($body_decoded) && isset($body_decoded['message'])) {
+                $error_message = $body_decoded['message'];
+            } else {
+                $error_message = $body;
+            }
+
+            self::logEvent('Error en API Bold (HTTP ' . $response_code . '): ' . $error_message);
+            return null;
+
+        } catch (\Throwable $th) {
+            self::logEvent('Error al crear link de pago Bold: ' . $th->getMessage() . ' in file ' . $th->getFile() . ' line ' . $th->getLine());
+            return null;
         }
     }
 
@@ -280,7 +346,7 @@ class BoldCommon {
             return rawurlencode($matches[0]);
         }, $path);
     }
-    
+
     /**
      * Generates the full obfuscated URL with parameters.
      *
@@ -299,7 +365,7 @@ class BoldCommon {
      * @param array $params Key-value pair of parameters.
      * @return string Obfuscated parameters as a single string.
      */
-    private static function encodeParamsWithDelimiter(array $params): string
+    public static function encodeParamsWithDelimiter(array $params): string
     {
         $paramString = self::convertParamsToDelimitedString($params);
         return self::obfuscateString($paramString);
@@ -406,7 +472,7 @@ class BoldCommon {
      * @param string|null $description The order description. Optional. Default is null.
      * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
      * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
-     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.2.3'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.3.1'.
      * @param string $size The button size. Optional. Default is 'L'.
      * @return string The HTML script for the payment button.
      */
@@ -419,7 +485,7 @@ class BoldCommon {
         $description = null,
         $redirectionUrl = null,
         $bold_color_button = 'dark',
-        $woocommerce_bold_version = 'wordpress-3.2.3',
+        $woocommerce_bold_version = 'wordpress-3.3.1',
         $size = 'L'
         ) : string
     {
@@ -448,5 +514,112 @@ class BoldCommon {
             >/**$orderReference**/
             </script>",
             $tags_enabled);
+    }
+
+    /**
+     * Retrieves the server-side fingerprint information based on the user agent and device type.
+     *
+     * @return array An associative array containing device type, operating system, model, browser, and platform.
+     */
+    public static function getServerSideFingerprint(): array
+    {
+        $user_agent = self::getUserAgent();
+
+        return [
+            "device_type" => wp_is_mobile() ? 'MOBILE' : 'DESKTOP',
+            "os"          => self::detectOS( $user_agent ),
+            "model"       => "",
+            "browser"     => self::detectBrowser( $user_agent ),
+            "platform"    => "WEB",
+            "ip"          => self::getClientIp()
+        ];
+    }
+
+    /**
+     * Retrieves the user agent string using WordPress core functions.
+     *
+     * @return string The sanitized user agent string.
+     */
+    private static function getUserAgent(): string
+    {
+        if ( function_exists( 'wp_get_user_agent' ) ) {
+            return wp_get_user_agent();
+        }
+
+        return isset( $_SERVER['HTTP_USER_AGENT'] )
+            ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) )
+            : '';
+    }
+
+    /**
+     * Retrieves the client's IP address.
+     *
+     * Uses WC_Geolocation::get_ip_address() if available (handles proxy headers automatically),
+     * otherwise falls back to REMOTE_ADDR.
+     *
+     * @return string The client IP address, or empty string if not available.
+     */
+    private static function getClientIp(): string
+    {
+        if ( class_exists( 'WC_Geolocation' ) ) {
+            return \WC_Geolocation::get_ip_address();
+        }
+
+        return isset( $_SERVER['REMOTE_ADDR'] )
+            ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) )
+            : '';
+    }
+
+    /**
+     * Detects the operating system from the user agent string.
+     *
+     * @param string $user_agent The user agent string.
+     * @return string The detected operating system name.
+     */
+    private static function detectOS( string $user_agent ): string
+    {
+        $os_patterns = [
+            'Windows'  => '/windows nt/i',
+            'Android'  => '/android/i',
+            'iOS'      => '/iphone|ipad|ipod/i',
+            'MacOS'    => '/macintosh|mac os x/i',
+            'ChromeOS' => '/cros/i',
+            'Linux'    => '/linux/i',
+        ];
+
+        foreach ( $os_patterns as $os_name => $pattern ) {
+            if ( preg_match( $pattern, $user_agent ) ) {
+                return $os_name;
+            }
+        }
+
+        return 'Unknown';
+    }
+
+    /**
+     * Detects the browser from the user agent string.
+     * Order matters: more specific patterns must come before generic ones.
+     *
+     * @param string $user_agent The user agent string.
+     * @return string The detected browser name.
+     */
+    private static function detectBrowser( string $user_agent ): string
+    {
+        $browser_patterns = [
+            'Opera'           => '/opera|opr\//i',
+            'Samsung Internet' => '/samsungbrowser/i',
+            'Microsoft Edge'  => '/edg/i',
+            'Google Chrome'   => '/chrome|chromium|crios/i',
+            'Mozilla Firefox' => '/firefox|fxios/i',
+            'Apple Safari'    => '/safari/i',
+        ];
+
+        foreach ( $browser_patterns as $browser_name => $pattern ) {
+            if ( preg_match( $pattern, $user_agent ) ) {
+                return $browser_name;
+            }
+        }
+
+        return 'Unknown';
     }
 }
