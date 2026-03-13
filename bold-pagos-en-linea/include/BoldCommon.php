@@ -261,20 +261,7 @@ class BoldCommon {
                 return null;
             }
 
-            $error_message = '';
-            if (is_array($body_decoded) && isset($body_decoded['errors']) && is_array($body_decoded['errors'])) {
-                $error_parts = [];
-                foreach ($body_decoded['errors'] as $error) {
-                    $code = isset($error['code']) ? $error['code'] : 'UNKNOWN';
-                    $msg  = isset($error['errors']) ? $error['errors'] : 'Sin detalle';
-                    $error_parts[] = "[{$code}] {$msg}";
-                }
-                $error_message = implode(' | ', $error_parts);
-            } elseif (is_array($body_decoded) && isset($body_decoded['message'])) {
-                $error_message = $body_decoded['message'];
-            } else {
-                $error_message = $body;
-            }
+            $error_message = (is_array($body)) ? json_encode($body) : $body;
 
             self::logEvent('Error en API Bold (HTTP ' . $response_code . '): ' . $error_message);
             return null;
@@ -472,7 +459,7 @@ class BoldCommon {
      * @param string|null $description The order description. Optional. Default is null.
      * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
      * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
-     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.3.1'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.3.2'.
      * @param string $size The button size. Optional. Default is 'L'.
      * @return string The HTML script for the payment button.
      */
@@ -485,7 +472,7 @@ class BoldCommon {
         $description = null,
         $redirectionUrl = null,
         $bold_color_button = 'dark',
-        $woocommerce_bold_version = 'wordpress-3.3.1',
+        $woocommerce_bold_version = 'wordpress-3.3.2',
         $size = 'L'
         ) : string
     {
@@ -526,7 +513,7 @@ class BoldCommon {
         $user_agent = self::getUserAgent();
 
         return [
-            "device_type" => wp_is_mobile() ? 'MOBILE' : 'DESKTOP',
+            "device_type" => wp_is_mobile() ? 'PHONE' : 'DESKTOP',
             "os"          => self::detectOS( $user_agent ),
             "model"       => "",
             "browser"     => self::detectBrowser( $user_agent ),

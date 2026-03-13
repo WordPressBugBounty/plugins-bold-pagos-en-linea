@@ -41,9 +41,9 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.3.1', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.3.2', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
-		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.3.1', true );
+		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.3.2', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_basic_js' );
 		wp_localize_script( 'woocommerce_bold_checkout_basic_js', 'BoldPlugin', ['checkoutUrl' => BoldConstants::URL_CHECKOUT]);
 	}
@@ -530,7 +530,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.3.1', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.3.2', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -682,7 +682,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'reference'        => $order_reference,
 			'description'      => $description,
 			'callback_url'     => $return_url,
-			'integration_type' => 'wordpress-woocommerce-3.3.1',
+			'integration_type' => 'wordpress-woocommerce-3.3.2',
 			'webhook_url'      => $webhook_url,
 			'device_fingerprint' => $device_fingerprint,
 		];

@@ -1,10 +1,14 @@
 *** Bold pagos en linea ***
 
-2025-11-12 - version 3.3.1
+2026-03-12  - version 3.3.2
+
+Fixed - incorrect param mobile detection in payment redirect flow
+
+2026-03-12 - version 3.3.1
 
 Fixed - Missing function in payment process
 
-2025-11-12 - version 3.3.0
+2026-03-12  - version 3.3.0
 
 Security - Optimized payment redirect flow and applied security enhancements.
 

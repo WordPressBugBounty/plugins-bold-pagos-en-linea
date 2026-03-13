@@ -5,7 +5,7 @@ Requires at least: 5.5.2
 Tested up to: 6.9
 Requires PHP: 7.4
 Network: true
-Stable tag: 3.3.1
+Stable tag: 3.3.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,7 +100,7 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Changelog ==
 
-### 3.3.1
+### 3.3.2
 
 - Mejoras en la experiencia de usuario y optimización del flujo de pago.
 - Actualización y mejoras de seguridad.
@@ -108,4 +108,4 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
 == Upgrade Notice ==
-Última versión 3.3.1
+Última versión 3.3.2
