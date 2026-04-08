@@ -167,6 +167,7 @@
     height: 100%;
     z-index: 0;
     border-radius: 20px;
+    object-fit: cover;
 }
 
 .banner__info {
@@ -948,10 +949,6 @@
 
     .banner{
         justify-content: center;
-    }
-
-    .banner__bg{
-        object-fit: cover;
     }
 
     #additional__settings__button{

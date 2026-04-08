@@ -36,21 +36,8 @@ $form_url = add_query_arg( array(
       class="bold_admin_panel">
     <?php echo wp_kses(wp_nonce_field( 'bold_update_settings', 'bold_settings_form_nonce' ), wp_kses_allowed_html('post')); ?>
     <section class="banner">
-        <img src="<?php echo esc_url(plugin_dir_url( __DIR__ )."assets/img/admin-panel/banner_nairo_bg.jpg"); ?>" class="banner__bg"
-             alt="banner nairo bg"/>
-        <article class="banner__info">
-            <h1 class="banner__info__title">
-                <?php echo esc_html__('Lleva las ventas de tu página web a otro nivel con Bold', 'bold-pagos-en-linea') ?>
-            </h1>
-            <p class="banner__info__subtitle">
-                <?php echo esc_html__('Pásate al Botón de pagos con la mejor experiencia para ti y tus clientes.', 'bold-pagos-en-linea') ?>
-            </p>
-        </article>
-        <img
-                class="banner__info__icon"
-                src="<?php echo esc_url(plugin_dir_url( __DIR__ )."assets/img/admin-panel/banner_icon.png"); ?>"
-                alt="banner icon"
-        />
+        <img src="<?php echo esc_url(plugin_dir_url( __DIR__ )."assets/img/admin-panel/banner_top_config.png"); ?>" class="banner__bg"
+             alt="Banner Bold"/>
     </section>
 	<?php if ( $woocommerceExist ): ?>
         <section id="bold__payment__method__status" class="bold-card">

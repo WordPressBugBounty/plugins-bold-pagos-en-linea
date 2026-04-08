@@ -5,7 +5,7 @@
 - Requires at least: 5.5.2
 - Requires PHP: 7.4
 - Tested up to: 6.9
-- Stable tag: 3.3.2
+- Stable tag: 3.3.3
 - Network: true
 - License: GPLv3 or later
 - License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -25,7 +25,7 @@ Este plugin establece conexiones externas con Bold para integrar funcionalidades
   - Descripción: Esta URL proporciona el script necesario para mostrar el botón de pago de Bold de forma automática en el proceso de compra.
 
 - Actualización de Estado de Transacción:
-  - URL: https://payments.api.bold.co/v2/payment-voucher/
+  - URL: https://online-cde.api.bold.co/v2/payment-voucher/
   - Descripción: Esta URL se utiliza para actualizar el estado de la transacción de las órdenes creadas a través de Bold. Permite mantener sincronizados los registros de transacciones y proporcionar una experiencia fluida al usuario final.
 
 - Validación Webhook configurado en panel de comercios
@@ -113,16 +113,15 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Upgrade Notice ==
 
-Última versión 3.3.2
+Última versión 3.3.3
 
 == Changelog ==
 
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
-### 3.3.2
+### 3.3.3
 
-- Mejoras en la experiencia de usuario y optimización del flujo de pago.
-- Actualización y mejoras de seguridad.
+- Mejoras en la experiencia de usuario y ajuste de seguridad en la verificación del estado de transacción al finalizar una transacción.
 
 == Créditos ==
 

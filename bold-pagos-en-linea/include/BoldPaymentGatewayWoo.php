@@ -41,9 +41,9 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.3.2', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.3.3', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
-		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.3.2', true );
+		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.3.3', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_basic_js' );
 		wp_localize_script( 'woocommerce_bold_checkout_basic_js', 'BoldPlugin', ['checkoutUrl' => BoldConstants::URL_CHECKOUT]);
 	}
@@ -284,7 +284,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	// Captura el estado del de la orden, si no llega el valor de la orden se obtiene por url del checkout de Bold
 	function bold_get_status_payment( $order_reference ) {
 		$public_key = $this->get_option_custom( 'test' ) === 'yes' ? $this->get_option_custom( 'test_api_key' ) : $this->get_option_custom( 'prod_api_key' );
-		$url_status = 'https://payments.api.bold.co/v2/payment-voucher/';
+		$url_status = 'https://online-cde.api.bold.co/v2/payment-voucher/';
 		$url_ltp    = $url_status . $order_reference;
 
 		$i = 1;
@@ -457,31 +457,14 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 		$status = $order->get_status();
 
-		if ( $status != 'pending' ) {
-			/* translators: %1$s type of transaction test/prod. %2$s custom message to note in order. */
-			$message_order_translate = __('%1$s Tu orden tiene el estado "%2$s"', 'bold-pagos-en-linea');
-			$message_order = sprintf(
-				$message_order_translate,
-				esc_attr( $text, 'bold-pagos-en-linea' ),
-				esc_attr( $status, 'bold-pagos-en-linea' )
-			);
-			return '<div class="woocommerce-info">' . $message_order . '.</div>';
-		}
-
-		$get_response = BoldCommon::getTxStatusCheckout();
-
-		if ( ! $get_response ) {
-			return '<div class="woocommerce-info">'.__('Aún no confirmamos el estado de tu pago. Espera unos segundos y recarga la página nuevamente.', 'bold-pagos-en-linea').'</div>';
-		}
-		/* translators: %1$s type of transaction test/prod. %2$s custom message to note in order. %3$s the status of transaction received from Bold */
-		$message_transaction_status_translate = __('<b>%1$s</b>%2$s El estado de tu transacción es: <b>"%3$s"</b>', 'bold-pagos-en-linea');
-		$message_transaction_status = sprintf(
-			$message_transaction_status_translate,
-			esc_html($test_message),
-			esc_html( $text, 'bold-pagos-en-linea' ),
-			esc_html( BoldConstants::getTransactionStatus($get_response), 'bold-pagos-en-linea' )
+		/* translators: %1$s type of transaction test/prod. %2$s custom message to note in order. */
+		$message_order_translate = __('%1$s Tu orden tiene el estado "%2$s"', 'bold-pagos-en-linea');
+		$message_order = sprintf(
+			$message_order_translate,
+			esc_attr( $text, 'bold-pagos-en-linea' ),
+			esc_html( BoldConstants::getTransactionStatus($status), 'bold-pagos-en-linea' )
 		);
-		return $message_transaction_status;
+		return '<div class="woocommerce-info">' . $message_order . '.</div>';
 	}
 
 	// Recibe la orden desde el checkout de Bold
@@ -494,7 +477,10 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			return;
 		}
 
-		$order_reference = BoldCommon::getOrderIdCheckout();
+		$is_test        = $this->get_option_custom('test') === 'yes';
+		$order_reference = $is_test
+			? $this->test_prefix . '~' . esc_attr($this->get_option_custom('prefix')) . '~' . $order_id
+			: esc_attr($this->get_option_custom('prefix')) . '~' . $order_id;
 		if ( ! $order_reference ) {
 			return;
 		}
@@ -530,7 +516,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.3.2', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.3.3', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -682,7 +668,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'reference'        => $order_reference,
 			'description'      => $description,
 			'callback_url'     => $return_url,
-			'integration_type' => 'wordpress-woocommerce-3.3.2',
+			'integration_type' => 'wordpress-woocommerce-3.3.3',
 			'webhook_url'      => $webhook_url,
 			'device_fingerprint' => $device_fingerprint,
 		];

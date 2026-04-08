@@ -1,4 +1,9 @@
 *** Bold pagos en linea ***
+2026-04-08  - version 3.3.3
+
+Security - Adjust process verification order status in payment flow.
+Security - Updated library versions.
+Changed - Design update in section configuration.
 
 2026-03-12  - version 3.3.2
 

@@ -459,7 +459,7 @@ class BoldCommon {
      * @param string|null $description The order description. Optional. Default is null.
      * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
      * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
-     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.3.2'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.3.3'.
      * @param string $size The button size. Optional. Default is 'L'.
      * @return string The HTML script for the payment button.
      */
@@ -472,7 +472,7 @@ class BoldCommon {
         $description = null,
         $redirectionUrl = null,
         $bold_color_button = 'dark',
-        $woocommerce_bold_version = 'wordpress-3.3.2',
+        $woocommerce_bold_version = 'wordpress-3.3.3',
         $size = 'L'
         ) : string
     {
@@ -511,14 +511,16 @@ class BoldCommon {
     public static function getServerSideFingerprint(): array
     {
         $user_agent = self::getUserAgent();
+        $os = self::detectOS($user_agent);
+        $browser = self::detectBrowser($user_agent);
 
         return [
             "device_type" => wp_is_mobile() ? 'PHONE' : 'DESKTOP',
-            "os"          => self::detectOS( $user_agent ),
-            "model"       => "",
-            "browser"     => self::detectBrowser( $user_agent ),
             "platform"    => "WEB",
-            "ip"          => self::getClientIp()
+            "os"          => $os !== 'Unknown' ? $os : null,
+            "model"       => null,
+            "browser"     => $browser !== 'Unknown' ? $browser : null,
+            "ip"          => self::getClientIp(),
         ];
     }
 
@@ -529,8 +531,8 @@ class BoldCommon {
      */
     private static function getUserAgent(): string
     {
-        if ( function_exists( 'wp_get_user_agent' ) ) {
-            return wp_get_user_agent();
+        if ( function_exists( 'wc_get_user_agent' ) ) {
+            return wc_get_user_agent();
         }
 
         return isset( $_SERVER['HTTP_USER_AGENT'] )
@@ -552,9 +554,8 @@ class BoldCommon {
             return \WC_Geolocation::get_ip_address();
         }
 
-        return isset( $_SERVER['REMOTE_ADDR'] )
-            ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) )
-            : '';
+        $ip = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '';
+        return filter_var($ip, FILTER_VALIDATE_IP) ?: '';
     }
 
     /**
