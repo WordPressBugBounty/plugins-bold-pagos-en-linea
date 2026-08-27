@@ -43,14 +43,18 @@ class BoldCheckoutElement extends HTMLElement {
       return;
     }
 
-    this.templateHTML = this.innerHTML;
+    try {
+      this.templateHTML = this.innerHTML;
 
-    const pluginUrl = this.getAttribute("plugin_url") || "";
-    const testMode = ["yes", "1", true, 1, "true"].includes(this.getAttribute("test_mode"));
-    const isLight = ["yes", "1", true, 1, "true"].includes(this.getAttribute("is_light"));
+      const pluginUrl = this.getAttribute("plugin_url") || "";
+      const testMode = ["yes", "1", true, 1, "true"].includes(this.getAttribute("test_mode"));
+      const isLight = ["yes", "1", true, 1, "true"].includes(this.getAttribute("is_light"));
 
-    const filledTemplate = this.fillTemplate(this.templateHTML, pluginUrl, isLight, testMode);
-    this.shadowDOM.innerHTML = `<style>${this.cssText}</style>${filledTemplate}`;
+      const filledTemplate = this.fillTemplate(this.templateHTML, pluginUrl, isLight, testMode);
+      this.shadowDOM.innerHTML = `<style>${this.cssText}</style>${filledTemplate}`;
+    } catch (error) {
+      console.error("Error rendering bold-checkout-element:", error);
+    }
   }
 
   fillTemplate(templateHTML, pluginUrl, isLight, testMode) {
@@ -68,10 +72,12 @@ class BoldCheckoutElement extends HTMLElement {
     }
 
     const containerBackgroundElement = doc.getElementById("bold_co_container_info_checkout_page");
-    if(isLight){
-      containerBackgroundElement.classList.add("is_light");
-    }else{
-      containerBackgroundElement.classList.remove("is_light");
+    if (containerBackgroundElement) {
+      if (isLight) {
+        containerBackgroundElement.classList.add("is_light");
+      } else {
+        containerBackgroundElement.classList.remove("is_light");
+      }
     }
 
     processedTemplate = doc.body.innerHTML;

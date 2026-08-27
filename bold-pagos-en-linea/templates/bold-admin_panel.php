@@ -34,7 +34,7 @@ $form_url = add_query_arg( array(
 
 <form id="form__admin__panel" action="<?php echo esc_url($form_url); ?>" method="POST"
       class="bold_admin_panel">
-    <?php echo wp_kses(wp_nonce_field( 'bold_update_settings', 'bold_settings_form_nonce' ), wp_kses_allowed_html('post')); ?>
+    <?php echo wp_nonce_field( 'bold_update_settings', 'bold_settings_form_nonce' ); ?>
     <section class="banner">
         <img src="<?php echo esc_url(plugin_dir_url( __DIR__ )."assets/img/admin-panel/banner_top_config.png"); ?>" class="banner__bg"
              alt="Banner Bold"/>

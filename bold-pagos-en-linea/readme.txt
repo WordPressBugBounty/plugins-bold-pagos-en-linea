@@ -2,10 +2,10 @@
 Contributors: boldplugins
 Tags: woocommerce, payment gateway, bold, ecommerce, payment method
 Requires at least: 5.5.2
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 7.4
 Network: true
-Stable tag: 3.3.3
+Stable tag: 3.4.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,12 +100,11 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Changelog ==
 
-### 3.3.3
+### 3.4.0
 
-- Mejoras en la experiencia de usuario y optimización del flujo de pago.
-- Actualización y mejoras de seguridad.
+- Nueva referencia única de orden para evitar conflictos, ajuste de seguridad al guardar la configuración y corrección de errores al cargar el ícono de pago en el checkout.
 
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
 == Upgrade Notice ==
-Última versión 3.3.3
+Última versión 3.4.0

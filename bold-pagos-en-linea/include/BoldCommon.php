@@ -9,6 +9,9 @@ use BoldPagosEnLinea\BoldTinyHtmlMinifier;
 use BoldPagosEnLinea\BoldConstants;
 
 class BoldCommon {
+    // Maximum number of characters supported by Bold for the reference
+    const REFERENCE_MAX_LENGTH = 60;
+
     // Key for obfuscation
     private static $obfuscationKey = "BoldPaymentButton";
 
@@ -18,12 +21,23 @@ class BoldCommon {
     // Custom delimiter for parameters
     private static $customDelimiter = "<bold>";
 
-    // Obtener el key del campo
+    /**
+     * Builds the WooCommerce settings field key for a given option.
+     *
+     * @param string $key The option key.
+     * @return string The full field key.
+     */
     public static function getFieldKey( string $key ): string {
         return 'woocommerce_' . 'bold_co_' . $key;
     }
 
-    // Obtener el key de la opción
+    /**
+     * Retrieves the value of a plugin option, supporting multisite installs.
+     *
+     * @param string $key The option key.
+     * @param string $default Optional. The default value if the option is empty. Default is an empty string.
+     * @return string The option value, or the default if not set.
+     */
     public static function getOptionKey( string $key, string $default = "" ): string {
         if ( is_multisite() ) {
             return empty( get_site_option( self::getFieldKey( $key ) ) ) ? $default : get_site_option( self::getFieldKey( $key ) );
@@ -32,25 +46,41 @@ class BoldCommon {
         }
     }
 
-    // Pasar HTML a una sola línea
+    /**
+     * Minifies HTML into a single line.
+     *
+     * @param string $html The HTML content to minify.
+     * @param array $options Optional. Minifier options. Default is an empty array.
+     * @return string The minified HTML.
+     */
     private static function tinyHtmlMinifier( string $html, array $options = [] ): string {
         $minifier = new BoldTinyHtmlMinifier( $options );
         return $minifier->minify( $html );
     }
 
-    // Registrar eventos en un archivo de registro
+    /**
+     * Logs an event message to the plugin log file.
+     *
+     * @param string $message The message to log.
+     * @return void
+     */
     public static function logEvent( string $message ): void {
         $current_time = current_time( 'mysql' );
         $log_message  = "[$current_time] $message\n";
 
-        // Verificar si WooCommerce está habilitado y usar WC_Logger
+        // Log via WC_Logger only when WooCommerce is active
         if ( class_exists( 'WC_Logger' ) ) {
             $logger = new \WC_Logger();
             $logger->add( 'plugin-bold', $log_message );
         }
     }
 
-    // Cargar la descripción personalizada del método de pago
+    /**
+     * Loads and minifies the custom payment method description template.
+     *
+     * @param string $template_name The path of the template file to load.
+     * @return string The minified HTML content.
+     */
     public static function uploadFileHtml( string $template_name ): string {
         $html = file_get_contents( $template_name, true );
         return self::tinyHtmlMinifier( $html, [
@@ -59,63 +89,78 @@ class BoldCommon {
         ]);
     }
 
+    /**
+     * Lists the relative paths of all PHP template files allowed to be loaded.
+     *
+     * @return array The list of allowed template relative paths.
+     */
     private static function getListTemplatesAllowed(): array {
-        // Ruta base del directorio de plantillas
+        // Base directory of the templates
         $templates_base_dir = realpath(WP_PLUGIN_DIR . "/" . self::getPluginPath() . "/templates");
-    
-        // Verificar que el directorio base es válido
+
+        // Bail out if the base directory is invalid
         if (!$templates_base_dir || !is_dir($templates_base_dir)) {
             return [];
         }
-    
+
         try {
             $directory_iterator = new \RecursiveDirectoryIterator($templates_base_dir, \FilesystemIterator::SKIP_DOTS);
             $iterator = new \RecursiveIteratorIterator($directory_iterator);
         } catch (\Exception $e) {
             return [];
         }
-    
-        // Obtener todos los archivos .php en el directorio y subdirectorios
+
+        // Collect every .php file in the directory and its subdirectories
         $allowed_templates = [];
         foreach ($iterator as $file) {
             if ($file->isFile() && $file->getExtension() === 'php') {
-                // Guardar la ruta relativa al directorio de plantillas
+                // Store the path relative to the templates directory
                 $allowed_templates[] = ltrim(str_replace('\\', '/', substr($file->getPathname(), strlen($templates_base_dir) + 1)), '/');
             }
         }
-    
+
         return $allowed_templates;
     }
-    
-    // Cargar archivos PHP
+
+    /**
+     * Renders a whitelisted PHP template file and returns the minified HTML.
+     *
+     * @param string $template_name The relative path of the template to load.
+     * @param array $params Optional. Variables to expose to the template. Default is an empty array.
+     * @return string The rendered and minified HTML, or an empty string if the template isn't allowed.
+     */
     public static function loadTemplatePhp( string $template_name, array $params = [] ): string {
-        // Obtener lista de plantillas permitidas
+        // Get the list of allowed templates
         $allowed_templates = self::getListTemplatesAllowed();
-    
-        // Validar que el archivo solicitado esté en la lista permitida
+
+        // Bail out if the requested file isn't in the allowed list
         if (!in_array($template_name, $allowed_templates, true)) {
             return '';
         }
-    
-        // Construir ruta completa
+
+        // Build the full path
         $file_path = realpath(WP_PLUGIN_DIR . "/" . self::getPluginPath() . "/templates/" . $template_name);
-    
-        // Verificar que el archivo existe
+
+        // Bail out if the file doesn't exist
         if (!$file_path || !is_file($file_path)) {
             return '';
         }
-    
+
         ob_start();
         include $file_path; // nosemgrep
         $content = ob_get_clean();
-    
+
         return self::tinyHtmlMinifier($content, [
             'collapse_whitespace' => true,
             'disable_comments'    => true,
         ]);
-    }    
+    }
 
-    // Obtener ID de la orden en checkout
+    /**
+     * Retrieves the order ID from the checkout query string.
+     *
+     * @return string|null The sanitized order ID, or null if not present.
+     */
     public static function getOrderIdCheckout(): ?string {
         if ( isset( $_SERVER['QUERY_STRING'] ) ) {
             $unslash_args = sanitize_text_field( wp_unslash( $_SERVER['QUERY_STRING'] ) );
@@ -131,7 +176,11 @@ class BoldCommon {
         return null;
     }
 
-    // Obtener estado de la transacción en checkout
+    /**
+     * Retrieves the transaction status from the checkout query string.
+     *
+     * @return string|null The sanitized transaction status, or null if not present.
+     */
     public static function getTxStatusCheckout(): ?string {
         if ( isset( $_SERVER['QUERY_STRING'] ) ) {
             $unslash_args = sanitize_text_field( wp_unslash( $_SERVER['QUERY_STRING'] ) );
@@ -148,17 +197,29 @@ class BoldCommon {
         return null;
     }
 
-    // Obtener la ruta del plugin
+    /**
+     * Retrieves the plugin's directory name.
+     *
+     * @return string The plugin directory name.
+     */
     public static function getPluginPath(): string {
         return basename( dirname( plugin_dir_path( __FILE__ ) ) );
     }
 
-    // Obtener la ruta del archivo principal del plugin
+    /**
+     * Retrieves the absolute path of the plugin's main file.
+     *
+     * @return string The absolute path to the plugin's main file.
+     */
     private static function getPathRunFile(): string {
         return WP_PLUGIN_DIR . '/' . self::getPluginPath() . '/bold-co.php';
     }
 
-    // Obtener la versión del plugin
+    /**
+     * Retrieves the currently installed plugin version.
+     *
+     * @return string The plugin version.
+     */
     public static function getPluginVersion(): string {
         if ( ! function_exists( 'get_plugin_data' ) ) {
             require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
@@ -170,7 +231,11 @@ class BoldCommon {
         return $plugin_data['Version'];
     }
 
-    // Obtener la versión remota del plugin
+    /**
+     * Retrieves the latest plugin version published remotely.
+     *
+     * @return string The remote plugin version, or '0.0.0' on failure.
+     */
     public static function getPluginVersionRemote(): string {
         $version_url    = BoldConstants::URL_CHECKOUT . '/plugins/woocommerce/version.txt';
         try {
@@ -191,14 +256,20 @@ class BoldCommon {
         }
     }
 
-    // Obtener los webhooks desde el servidor remoto
+    /**
+     * Verifies with Bold's remote API that the webhook URL is registered.
+     *
+     * @param string $api_key The API key for authentication.
+     * @param string $webhook_url The webhook URL to verify.
+     * @return bool True if the webhook is registered, false otherwise.
+     */
     public static function getVerifyWebhookRemote( string $api_key, string $webhook_url ): bool {
         try {
             $webhooks_url = BoldConstants::URL_API_ONLINE . '/ecommerce/v1/verify-webhook?url='.$webhook_url;
             $response = wp_remote_get( $webhooks_url, [
                 'headers' => ['Authorization' => 'x-api-key ' . $api_key]
             ]);
-    
+
             if ( ( !is_wp_error( $response ) ) && ( 200 === wp_remote_retrieve_response_code( $response ) ) ) {
                 return true;
             } elseif ( !is_wp_error( $response ) && ( 404 === wp_remote_retrieve_response_code( $response ) )  ) {
@@ -459,7 +530,7 @@ class BoldCommon {
      * @param string|null $description The order description. Optional. Default is null.
      * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
      * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
-     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.3.3'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.4.0'.
      * @param string $size The button size. Optional. Default is 'L'.
      * @return string The HTML script for the payment button.
      */
@@ -472,7 +543,7 @@ class BoldCommon {
         $description = null,
         $redirectionUrl = null,
         $bold_color_button = 'dark',
-        $woocommerce_bold_version = 'wordpress-3.3.3',
+        $woocommerce_bold_version = 'wordpress-3.4.0',
         $size = 'L'
         ) : string
     {
@@ -609,5 +680,70 @@ class BoldCommon {
         }
 
         return 'Unknown';
+    }
+
+    /**
+     * Retrieves the site's domain without its extension (.com, .co, etc), stripped
+     * of any non-alphanumeric characters.
+     *
+     * @return string The sanitized domain slug.
+     */
+    public static function getSiteDomainSlug(): string {
+        $host = wp_parse_url( home_url(), PHP_URL_HOST );
+        if ( empty( $host ) ) {
+            $host = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : 'site';
+        }
+        $host     = preg_replace( '/:\d+$/', '', $host );
+        $segments = explode( '.', $host );
+        if ( count( $segments ) > 1 ) {
+            array_pop( $segments );
+        }
+        $domain = preg_replace( '/[^A-Za-z0-9]/', '', implode( '', $segments ) );
+
+        return strtolower( $domain );
+    }
+
+    /**
+     * Builds a unique order reference: {prefix}~{order_id}~{domain}{timestamp_ns}.
+     *
+     * The prefix and order ID are never truncated, since they identify the store
+     * and the order. If the result would exceed REFERENCE_MAX_LENGTH, the domain
+     * segment is shortened to make room, since it only helps prevent collisions.
+     *
+     * @param string $prefix The merchant's configured reference prefix.
+     * @param mixed $order_id The WooCommerce order ID.
+     * @param bool $is_test Whether the order is a test/sandbox order.
+     * @param string $test_prefix The prefix used to mark test references.
+     * @return string The generated order reference.
+     */
+    public static function buildOrderReference( string $prefix, $order_id, bool $is_test, string $test_prefix ): string {
+        $fixed_part   = ( $is_test ? $test_prefix . '~' : '' ) . $prefix . '~' . $order_id . '~';
+        $timestamp_ns = number_format( microtime( true ) * 1e9, 0, '.', '' );
+        $max_domain   = self::REFERENCE_MAX_LENGTH - strlen( $fixed_part ) - strlen( $timestamp_ns );
+        $domain       = substr( self::getSiteDomainSlug(), 0, max( 0, $max_domain ) );
+
+        return $fixed_part . $domain . $timestamp_ns;
+    }
+
+    /**
+     * Parses an order reference into its prefix, order ID, and test-mode flag.
+     * Compatible with the legacy "Bold~order_id" format.
+     *
+     * @param string $reference The order reference to parse.
+     * @param string $test_prefix The prefix used to mark test references.
+     * @return array{is_test: bool, prefix: string, order_id: string} The parsed reference components.
+     */
+    public static function parseOrderReference( string $reference, string $test_prefix ): array {
+        $parts   = explode( '~', $reference );
+        $is_test = isset( $parts[0] ) && $parts[0] === $test_prefix;
+        if ( $is_test ) {
+            array_shift( $parts );
+        }
+
+        return [
+            'is_test'  => $is_test,
+            'prefix'   => $parts[0] ?? '',
+            'order_id' => $parts[1] ?? '',
+        ];
     }
 }

@@ -1,4 +1,10 @@
 *** Bold pagos en linea ***
+2026-08-26  - version 3.4.0
+
+Added - New unique order reference generation to prevent conflicts between orders.
+Fixed - Security verification when saving admin settings.
+Fixed - Possible errors loading payment icon in checkout.
+
 2026-04-08  - version 3.3.3
 
 Security - Adjust process verification order status in payment flow.

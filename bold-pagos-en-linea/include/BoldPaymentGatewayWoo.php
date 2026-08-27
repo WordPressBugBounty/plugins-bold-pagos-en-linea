@@ -41,9 +41,9 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.3.3', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.4.0', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
-		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.3.3', true );
+		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.4.0', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_basic_js' );
 		wp_localize_script( 'woocommerce_bold_checkout_basic_js', 'BoldPlugin', ['checkoutUrl' => BoldConstants::URL_CHECKOUT]);
 	}
@@ -202,15 +202,14 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			);
 		}
 
-		$parts    = explode( '~', $metadata->reference );
-		$order_id = end( $parts );
-		if ( $parts[0] == $this->test_prefix ) {
+		$parsed_reference = BoldCommon::parseOrderReference( $metadata->reference, $this->test_prefix );
+		$order_id         = $parsed_reference['order_id'];
+		if ( $parsed_reference['is_test'] ) {
 			$secret_key_merchant = $this->get_option_custom( 'test_secret_key' );
-			$valid_prefix        = $parts[1] == $this->get_option_custom( 'prefix' );
 		} else {
 			$secret_key_merchant = $this->get_option_custom( 'prod_secret_key' );
-			$valid_prefix        = $parts[0] == $this->get_option_custom( 'prefix' );
 		}
+		$valid_prefix = $parsed_reference['prefix'] == $this->get_option_custom( 'prefix' );
 		if ( ! $valid_prefix ) {
 			wp_die(
 				esc_html("The reference is not from store " . get_bloginfo( 'name' ) . " WooCommerce"),
@@ -416,13 +415,13 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			foreach ( $orders_pending as $order ) {
 				$is_test_order = get_post_meta( $order->get_id(), '_is_test_order', true );
 
-				if ( $is_test_order ) {
-					$order_reference = $this->test_prefix . '~' . $this->get_option_custom( 'prefix' ) . '~' . $order->get_id();
-					BoldCommon::logEvent( 'Validando la orden de prueba: ' . $order_reference );
-				} else {
-					$order_reference = $this->get_option_custom( 'prefix' ) . '~' . $order->get_id();
-					BoldCommon::logEvent( 'Validando la orden: ' . $order_reference );
+				$order_reference = get_post_meta( $order->get_id(), '_bold_reference', true );
+				if ( ! $order_reference ) {
+					$order_reference = $is_test_order
+						? $this->test_prefix . '~' . $this->get_option_custom( 'prefix' ) . '~' . $order->get_id()
+						: $this->get_option_custom( 'prefix' ) . '~' . $order->get_id();
 				}
+				BoldCommon::logEvent( 'Validando la orden: ' . $order_reference );
 
 				$get_response = $this->bold_get_status_payment( $order_reference );
 				if ( ! $get_response or array_key_exists( 'errors', $get_response ) ) {
@@ -469,8 +468,16 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Recibe la orden desde el checkout de Bold
 	function bold_received_order( $order_id ): void {
+		if ( is_admin() || is_null( WC()->cart ) ) {
+			return;
+		}
+
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return;
+		}
+
 		WC()->cart->empty_cart();
-		$order  = wc_get_order( $order_id );
 		$status = $order->get_status();
 
 		if ( $status != 'pending' && $status != 'failed' ) {
@@ -478,11 +485,11 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		}
 
 		$is_test        = $this->get_option_custom('test') === 'yes';
-		$order_reference = $is_test
-			? $this->test_prefix . '~' . esc_attr($this->get_option_custom('prefix')) . '~' . $order_id
-			: esc_attr($this->get_option_custom('prefix')) . '~' . $order_id;
+		$order_reference = get_post_meta( $order_id, '_bold_reference', true );
 		if ( ! $order_reference ) {
-			return;
+			$order_reference = $is_test
+				? $this->test_prefix . '~' . esc_attr($this->get_option_custom('prefix')) . '~' . $order_id
+				: esc_attr($this->get_option_custom('prefix')) . '~' . $order_id;
 		}
 
 		$get_response = $this->bold_get_status_payment( $order_reference );
@@ -516,7 +523,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.3.3', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.4.0', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -634,9 +641,13 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		$is_test        = $this->get_option_custom('test') === 'yes';
 		$auth_token     = $is_test ? esc_attr($this->get_option_custom('test_api_key')) : esc_attr($this->get_option_custom('prod_api_key'));
 		$secret_key     = $is_test ? $this->get_option_custom('test_secret_key') : $this->get_option_custom('prod_secret_key');
-		$order_reference = $is_test
-			? $this->test_prefix . '~' . esc_attr($this->get_option_custom('prefix')) . '~' . $order_id
-			: esc_attr($this->get_option_custom('prefix')) . '~' . $order_id;
+		$order_reference = BoldCommon::buildOrderReference(
+			esc_attr($this->get_option_custom('prefix')),
+			$order_id,
+			$is_test,
+			$this->test_prefix
+		);
+		update_post_meta( $order_id, '_bold_reference', $order_reference );
 
 		$integrity_key = hash('sha256', "{$order_reference}{$amount_in_cents}{$currency}{$secret_key}");
 
@@ -668,7 +679,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'reference'        => $order_reference,
 			'description'      => $description,
 			'callback_url'     => $return_url,
-			'integration_type' => 'wordpress-woocommerce-3.3.3',
+			'integration_type' => 'wordpress-woocommerce-3.4.0',
 			'webhook_url'      => $webhook_url,
 			'device_fingerprint' => $device_fingerprint,
 		];

@@ -4,8 +4,8 @@
 - Tags: woocommerce, payment gateway, bold, colombia, ecommerce
 - Requires at least: 5.5.2
 - Requires PHP: 7.4
-- Tested up to: 6.9
-- Stable tag: 3.3.3
+- Tested up to: 7.1
+- Stable tag: 3.4.0
 - Network: true
 - License: GPLv3 or later
 - License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -113,15 +113,15 @@ Consulta la [documentación oficial de Bold](https://developers.bold.co/pagos-en
 
 == Upgrade Notice ==
 
-Última versión 3.3.3
+Última versión 3.4.0
 
 == Changelog ==
 
 [Ver registro de cambios para todas las versiones.](CHANGELOG.md).
 
-### 3.3.3
+### 3.4.0
 
-- Mejoras en la experiencia de usuario y ajuste de seguridad en la verificación del estado de transacción al finalizar una transacción.
+- Nueva referencia única de orden para evitar conflictos, ajuste de seguridad al guardar la configuración y corrección de errores al cargar el ícono de pago en el checkout.
 
 == Créditos ==
 
