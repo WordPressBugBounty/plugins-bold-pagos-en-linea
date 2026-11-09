@@ -11,10 +11,10 @@
     "author": "Bold",
     "license": "ISC",
     "devDependencies": {
-        "@wordpress/scripts": "^31.8.0"
+        "@wordpress/scripts": "^37.0.0"
     },
     "dependencies": {
-        "notiflix": "^3.2.8"
+        "notiflix": "^3.3.0"
     },
     "overrides": {
         "@babel/runtime": "^7.27.6",

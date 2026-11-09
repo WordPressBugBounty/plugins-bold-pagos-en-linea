@@ -1,4 +1,8 @@
 *** Bold pagos en linea ***
+2026-10-30  - version 3.5.0
+
+Security - Minimum PHP version raised to 8.2 (PHP 7.4, 8.0 and 8.1 have no security patches).
+
 2026-08-26  - version 3.4.0
 
 Added - New unique order reference generation to prevent conflicts between orders.
