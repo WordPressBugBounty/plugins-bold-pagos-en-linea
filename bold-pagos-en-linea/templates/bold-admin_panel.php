@@ -68,7 +68,7 @@ $form_url = add_query_arg( array(
                 <span class="title__image__text"><?php echo esc_html__('Requisitos previos', 'bold-pagos-en-linea') ?></span>
             </article>
             <ul id="previous__requirements__list">
-                <li>PHP >= 7.4</li>
+                <li>PHP >= 8.2</li>
                 <li><?php echo esc_html__('Version mínima recomendada de', 'bold-pagos-en-linea') ?> WordPress: 6.1</li>
                 <li><?php echo esc_html__('Version mínima recomendada de', 'bold-pagos-en-linea') ?> WooCommerce: 8.1</li>
                 <li><?php echo esc_html__('Llaves de integración', 'bold-pagos-en-linea') ?></li>

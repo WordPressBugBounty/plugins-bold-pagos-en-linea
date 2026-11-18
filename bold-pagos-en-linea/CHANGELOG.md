@@ -1,4 +1,10 @@
 *** Bold pagos en linea ***
+2026-11-18  - version 3.5.1
+
+Security - Improved validation of payment notifications.
+Fixed - Duplicated or retried notifications are ignored.
+Fixed - Order received texts with other payment methods.
+
 2026-10-30  - version 3.5.0
 
 Security - Minimum PHP version raised to 8.2 (PHP 7.4, 8.0 and 8.1 have no security patches).
