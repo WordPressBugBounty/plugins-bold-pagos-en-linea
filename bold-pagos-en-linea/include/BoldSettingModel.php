@@ -66,20 +66,32 @@ class BoldSettingModel {
 		$this->logo_is_light = $logo_is_light;
 	}
 
+	// Keys can never contain quotes or angle brackets; reject anything outside this set.
+	private function assertValidKey( string $key ): void {
+		if ( $key !== '' && ! preg_match( '/^[A-Za-z0-9_\-.=+\/]{8,128}$/', $key ) ) {
+			throw new \InvalidArgumentException( esc_html__( 'Las llaves solo pueden tener letras, números y los símbolos _ - . = + / (entre 8 y 128 caracteres).', 'bold-pagos-en-linea' ) );
+		}
+	}
+
 	public function setProdApiKey( $prod_api_key ): void {
+		$this->assertValidKey( $prod_api_key );
 		$this->prod_api_key = $prod_api_key;
 	}
 
 	public function setProdSecretKey( $prod_secret_key ): void {
-		$this->prod_secret_key = $prod_secret_key;
+		$this->assertValidKey( $prod_secret_key );
+		// Secret is never rendered back; an empty submit keeps the stored one.
+		$this->prod_secret_key = $prod_secret_key !== '' ? $prod_secret_key : BoldCommon::getOptionKey( 'prod_secret_key' );
 	}
 
 	public function setTestApiKey( $test_api_key ): void {
+		$this->assertValidKey( $test_api_key );
 		$this->test_api_key = $test_api_key;
 	}
 
 	public function setTestSecretKey( $test_secret_key ): void {
-		$this->test_secret_key = $test_secret_key;
+		$this->assertValidKey( $test_secret_key );
+		$this->test_secret_key = $test_secret_key !== '' ? $test_secret_key : BoldCommon::getOptionKey( 'test_secret_key' );
 	}
 
 	public function setOriginUrl( $origin_url ): void {

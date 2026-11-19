@@ -49,7 +49,7 @@ final class BoldGatewayBlocks extends AbstractPaymentMethodType {
 				'wp-html-entities',
 				'wp-i18n',
 			],
-			'3.5.1',
+			'3.5.2',
 			true
 		);
 		if ( function_exists( 'wp_set_script_translations' ) ) {

@@ -30,7 +30,7 @@ class BoldButtonBlock
                 ],
                 'currency' => [
                     'type'    => 'string',
-                    'default' => 'COP',
+                    'default' => BoldCommon::DEFAULT_CURRENCY,
                     'help'    => __('Si el monto es cero, se cobrará en COP', 'bold-pagos-en-linea'),
                 ],
                 'description' => [
@@ -68,15 +68,18 @@ class BoldButtonBlock
             return '<h6>' . esc_html__('Por favor verifica la configuración', 'bold-pagos-en-linea') . '</h6>';
         }
 
-        $orderReference = "WP-BB-" . sprintf('%.0f', microtime(true) * 1e9);
+        $orderReference = BoldCommon::buildButtonReference("WP-BB-");
         $amount = esc_attr($attrs["amount"]);
         $currency = esc_attr($attrs["currency"]);
+        if (!BoldCommon::isValidButtonPayment($amount, $currency)) {
+            return '<h6>' . esc_html__('Por favor verifica el monto y la divisa.', 'bold-pagos-en-linea') . '</h6>';
+        }
         $signature = esc_attr(hash("sha256", "{$orderReference}{$amount}{$currency}{$secretKey}"));
         $redirectionUrl = $attrs["redirectionUrl"] ? esc_attr($attrs["redirectionUrl"]) : '';
         $description = $attrs["description"] ? esc_attr($attrs["description"]) : '';
         $bold_color_button = esc_attr($attrs["color"]);
         $bold_size_button = esc_attr($attrs["size"]);
-        $woocommerce_bold_version = "wordpress-block-3.5.1";
+        $woocommerce_bold_version = "wordpress-block-3.5.2";
 
         return BoldCommon::getButtonScript(
             $apiKey,

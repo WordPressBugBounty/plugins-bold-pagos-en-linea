@@ -151,8 +151,10 @@ $form_url = add_query_arg( array(
                             type="password"
                             name="prod_secret_key"
                             class="authentication__keys__container__item__input bold_co_input_access_key"
-                            value="<?php echo esc_attr($secretKey) ?>"
-                            required
+                            value=""
+                            placeholder="<?php echo $secretKey !== '' ? '••••••••' : '' ?>"
+                            autocomplete="new-password"
+                            <?php echo $secretKey !== '' ? '' : 'required' ?>
                     />
                 </article>
             </div>
@@ -185,8 +187,10 @@ $form_url = add_query_arg( array(
                             type="password"
                             name="test_secret_key"
                             class="authentication__keys__container__item__input bold_co_input_access_key"
-                            value="<?php echo esc_attr($testSecretKey) ?>"
-                            required
+                            value=""
+                            placeholder="<?php echo $testSecretKey !== '' ? '••••••••' : '' ?>"
+                            autocomplete="new-password"
+                            <?php echo $testSecretKey !== '' ? '' : 'required' ?>
                     />
                 </article>
             </div>

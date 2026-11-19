@@ -41,9 +41,9 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	private function bold_register_scripts(){
-		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.5.1', true );
+		wp_register_script( 'woocommerce_bold_checkout_web_component_js', plugins_url( '/../assets/js/bold-checkout-ui.js', __FILE__ ), array(), '3.5.2', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_web_component_js' );
-		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.5.1', true );
+		wp_register_script( 'woocommerce_bold_checkout_basic_js', plugins_url( '/../assets/js/bold-checkout-basic.js', __FILE__ ), ['jquery'], '3.5.2', true );
 		wp_enqueue_script( 'woocommerce_bold_checkout_basic_js' );
 		wp_localize_script( 'woocommerce_bold_checkout_basic_js', 'BoldPlugin', ['checkoutUrl' => BoldConstants::URL_CHECKOUT]);
 	}
@@ -156,7 +156,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	// Handle webhook request
 	public function bold_handle_webhook() {
 		if ( isset($_SERVER["REQUEST_METHOD"]) && sanitize_text_field(wp_unslash($_SERVER["REQUEST_METHOD"])) == "GET" ) {
-			$this->bold_get_async_order_status();
+			// Reconciliation runs only from cron and the protected admin action, never from a public GET.
 			if(isset($_SERVER["HTTP_REFERER"])){
 				$sanitized_referer = sanitize_url(wp_unslash($_SERVER["HTTP_REFERER"]));
 				$sanitized_referer = esc_url_raw($sanitized_referer, ['http', 'https']);
@@ -259,6 +259,21 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			);
 		}
 		
+		// Test mode signs with an empty key, so confine events to this gateway's own test orders.
+		$is_test_order = (bool) get_post_meta( $order->get_id(), '_is_test_order', true );
+		$is_allowed    = $is_test_mode
+			? ( $order->get_payment_method() === $this->id
+				&& $is_test_order
+				&& hash_equals( (string) get_post_meta( $order->get_id(), '_bold_reference', true ), (string) $metadata->reference ) )
+			: ( ! $parsed_reference['is_test'] && ! $is_test_order );
+		if ( ! $is_allowed ) {
+			wp_die(
+				esc_html("The order does not match the event"),
+				403,
+				array( 'response' => 403, 'content_type' => 'application/json' )
+			);
+		}
+
 		$event_key        = $get_response['transaction_id'] . '|' . $get_response['payment_status'];
 		$processed_events = (array) $order->get_meta( '_bold_processed_webhook_events' );
 		if ( ! in_array( $event_key, $processed_events, true ) ) {
@@ -285,7 +300,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Monedas soportadas por Bold
 	function bold_get_supported_currency(): array {
-		return [ 'COP', 'USD' ];
+		return BoldCommon::SUPPORTED_CURRENCIES;
 	}
 
 	// Mensaje en el checkout de WooCommerce cuando no está disponible el método de pago Bold
@@ -305,34 +320,24 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 		$url_status = 'https://online-cde.api.bold.co/v2/payment-voucher/';
 		$url_ltp    = $url_status . $order_reference;
 
-		$i = 1;
+		try {
+			$response = wp_remote_get( $url_ltp, array(
+				'timeout' => 5,
+				'headers' => array(
+					"Content-Type"  => "application/json",
+					'Authorization' => 'x-api-key ' . $public_key
+				)
+			) );
 
-		while ( $i <= 3 ) {
-			try {
-				$response = wp_remote_get( $url_ltp, array(
-					'headers' => array(
-						"Content-Type"  => "application/json",
-						'Authorization' => 'x-api-key ' . $public_key
-					)
-				) );
-	
-				$body = wp_remote_retrieve_body( $response );
-	
-				$body_decode = json_decode( $body, true );
-				if ( ! $body_decode or array_key_exists( 'message', $body_decode ) ) {
-					sleep( $i * $i );
-					$i ++;
-					continue;
-				}
-	
-				return $body_decode;
-			} catch (\Throwable $th) {
-				$i ++;
-				continue;
+			$body_decode = json_decode( wp_remote_retrieve_body( $response ), true );
+			if ( ! $body_decode or array_key_exists( 'message', $body_decode ) ) {
+				return null;
 			}
-		}
 
-		return null;
+			return $body_decode;
+		} catch ( \Throwable $th ) {
+			return null;
+		}
 	}
 
 	// Actualización del estado de la transacción
@@ -349,7 +354,11 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 					$message_error_translate,
 					$status_response
 				);
-				$order->add_order_note( $message_status );
+				if ( $order->get_meta( '_bold_last_pending_status' ) !== $status_response ) {
+					$order->add_order_note( $message_status );
+					$order->update_meta_data( '_bold_last_pending_status', $status_response );
+					$order->save();
+				}
 				return "$status_response";
 			//Final states
 			case 'SALE_APPROVED':
@@ -386,6 +395,12 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 				return "processing";
 			case 'VOID_APPROVED':
 			case 'VOIDED':
+				// Only void an order paid earlier through this gateway with the same transaction.
+				if ( ! $order->is_paid()
+					|| $order->get_payment_method() !== $this->id
+					|| (string) $order->get_transaction_id() !== (string) ( $get_response['transaction_id'] ?? '' ) ) {
+					return "inconsistent";
+				}
 				$message_order = __('Se realizó anulación de la transacción', 'bold-pagos-en-linea');
 				$order->add_order_note( $message_order );
 				$order->update_status( 'refunded' );
@@ -404,14 +419,14 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 	}
 
 	// Captura todas las órdenes pendientes de Bold
-	function bold_get_pending_orders($date_after = null): array {
+	function bold_get_pending_orders($date_after = null, int $limit = -1): array {
 		// Get all orders pending
 		if (!$date_after) {
 			$date_after = gmdate('Y-m-d', strtotime('-2 days'));
 		}
 		$args = array(
 			'status'         => [ 'pending', 'failed' ],
-			'limit'          => - 1,
+			'limit'          => $limit,
 			'payment_method' => $this->id,
 			'date_created'   => '>' . $date_after,
 		);
@@ -421,10 +436,28 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Válida las órdenes pendientes de pago y las actualiza
 	public function bold_get_async_order_status(): bool {
+		// Only one run at a time; a lock older than 5 minutes is treated as stale.
+		$lock_key = 'bold_reconcile_lock';
+		if ( ! add_option( $lock_key, time(), '', 'no' ) ) {
+			if ( time() - (int) get_option( $lock_key ) < 300 ) {
+				return true;
+			}
+			update_option( $lock_key, time() );
+		}
+
+		try {
+			return $this->bold_reconcile_pending_orders();
+		} finally {
+			delete_option( $lock_key );
+		}
+	}
+
+	// Cada ejecución revisa como máximo 20 órdenes
+	private function bold_reconcile_pending_orders(): bool {
 		// Registrar la ejecución del evento
 		BoldCommon::logEvent( 'Iniciando validación de estados: ' . gmdate( 'Y-m-d H:i:s' ) );
 
-		$orders_pending = $this->bold_get_pending_orders();
+		$orders_pending = $this->bold_get_pending_orders( null, 20 );
 		if ( ! $orders_pending ) {
 			BoldCommon::logEvent( 'No hay órdenes pendientes' );
 
@@ -458,7 +491,8 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			}
 
 			return true;
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
+			BoldCommon::logEvent( 'Error validando estados: ' . $e->getMessage() );
 			return false;
 		}
 	}
@@ -537,7 +571,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 
 	// Carga los datos de configuración para usar Bold como pasarela de pagos
 	public function init_form_fields(): void {
-		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.5.1', 'all' );
+		wp_enqueue_style( 'woocommerce_bold_gateway_form_css', plugins_url( '/../assets/css/bold_woocommerce_form_styles.css', __FILE__ ), false, '3.5.2', 'all' );
 		$this->form_fields = array(
 			'config_bold' => array(
 				'title'       => '',
@@ -693,7 +727,7 @@ class BoldPaymentGatewayWoo extends \WC_Payment_Gateway {
 			'reference'        => $order_reference,
 			'description'      => $description,
 			'callback_url'     => $return_url,
-			'integration_type' => 'wordpress-woocommerce-3.5.1',
+			'integration_type' => 'wordpress-woocommerce-3.5.2',
 			'webhook_url'      => $webhook_url,
 			'device_fingerprint' => $device_fingerprint,
 		];

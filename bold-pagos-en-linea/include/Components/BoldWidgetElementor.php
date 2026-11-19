@@ -174,11 +174,8 @@ class BoldWidgetElementor extends \Elementor\Widget_Base {
 				'classes' => 'bold-css-input',
 				'label' => esc_html__( 'Divisa', 'bold-pagos-en-linea' ),
 				'type' => \Elementor\Controls_Manager::SELECT,
-				'default' => 'COP',
-				'options' => [
-					'COP' => 'COP',
-					'USD' => 'USD',
-				],
+				'default' => BoldCommon::DEFAULT_CURRENCY,
+				'options' => array_combine(BoldCommon::SUPPORTED_CURRENCIES, BoldCommon::SUPPORTED_CURRENCIES),
 				'description' => esc_html__('Si el monto es cero, se cobrará en COP', 'bold-pagos-en-linea'),
 				'label_block' => true,
 			]
@@ -266,6 +263,10 @@ class BoldWidgetElementor extends \Elementor\Widget_Base {
 	 */
 	protected function render(): void {
 		$settings = $this->get_settings_for_display();
+		// Stored values can bypass the SELECT controls; fall back to defaults.
+		$settings['color'] = in_array($settings['color'] ?? '', ['dark', 'light'], true) ? $settings['color'] : 'dark';
+		$settings['size'] = in_array($settings['size'] ?? '', ['L', 'M', 'S'], true) ? $settings['size'] : 'L';
+		$settings['currency'] = BoldCommon::isSupportedCurrency($settings['currency'] ?? '') ? $settings['currency'] : BoldCommon::DEFAULT_CURRENCY;
 		if (Plugin::$instance->editor->is_edit_mode())
 		{
 			$BoldImageDark = plugins_url('../../assets/img/admin-panel/bold_co_button_example_dark.svg', __FILE__);
@@ -286,15 +287,19 @@ class BoldWidgetElementor extends \Elementor\Widget_Base {
 				echo '<h6>' . esc_html__('Por favor verifica la configuración.', 'bold-pagos-en-linea') . '</h6>';
 			}
 	
-			$orderReference = "WP-WE-" . sprintf('%.0f', microtime(true) * 1e9);
+			$orderReference = BoldCommon::buildButtonReference("WP-WE-");
 			$amount = esc_attr($settings["amount"]);
 			$currency = esc_attr($settings["currency"]);
+			if (!BoldCommon::isValidButtonPayment($amount, $currency)) {
+				echo '<h6>' . esc_html__('Por favor verifica el monto y la divisa.', 'bold-pagos-en-linea') . '</h6>';
+				return;
+			}
 			$signature = esc_attr(hash("sha256", "{$orderReference}{$amount}{$currency}{$secretKey}"));
 			$redirectionUrl = $settings["redirectionUrl"] ? esc_attr($settings["redirectionUrl"]['url']) : '';
 			$description = $settings["description"] ? esc_attr($settings["description"]) : '';
 			$bold_color_button = esc_attr($settings["color"]);
 			$bold_size_button = esc_attr($settings["size"]);
-			$woocommerce_bold_version = "wordpress-elementor-3.5.1";
+			$woocommerce_bold_version = "wordpress-elementor-3.5.2";
 	
 			$html_tag = [
 				'ordered' => 'ol',
@@ -329,9 +334,11 @@ class BoldWidgetElementor extends \Elementor\Widget_Base {
 		$BoldImageDark = plugins_url('../../assets/img/admin-panel/bold_co_button_example_dark.svg', __FILE__);
 		$BoldImageLight = plugins_url('../../assets/img/admin-panel/bold_co_button_example_light.svg', __FILE__);
 		?>
-		<div 
-			class="bold-button-preview bold-button-{{{settings.color}}} size-{{{settings.size}}}" 
-			style="background-image: url('{{{((settings.color=='dark')?'<?php echo esc_url($BoldImageDark) ?>':'<?php echo esc_url($BoldImageLight) ?>')}}}')">
+		<# var boldColor = settings.color === 'light' ? 'light' : 'dark'; #>
+		<# var boldSize = ['L', 'M', 'S'].indexOf(settings.size) > -1 ? settings.size : 'L'; #>
+		<div
+			class="bold-button-preview bold-button-{{ boldColor }} size-{{ boldSize }}" 
+			style="background-image: url('{{{((boldColor=='dark')?'<?php echo esc_url($BoldImageDark) ?>':'<?php echo esc_url($BoldImageLight) ?>')}}}')">
 		</div>
 		<?php
 	}

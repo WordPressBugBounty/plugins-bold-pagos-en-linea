@@ -38,16 +38,19 @@ class BoldShortcode
             return '<h6>' . esc_html__('Por favor verifica la configuración.', 'bold-pagos-en-linea') . '</h6>';
         }
 
-        $orderReference = "WP-SC-" . sprintf('%.0f', microtime(true) * 1e9);
+        $orderReference = BoldCommon::buildButtonReference("WP-SC-");
         $amount = isset($attrs["amount"]) ? esc_attr($attrs["amount"]) : '0';
-        $currency = isset($attrs["currency"]) ? esc_attr($attrs["currency"]) : "COP";
+        $currency = isset($attrs["currency"]) ? esc_attr($attrs["currency"]) : BoldCommon::DEFAULT_CURRENCY;
+        if (!BoldCommon::isValidButtonPayment($amount, $currency)) {
+            return '<h6>' . esc_html__('Por favor verifica el monto y la divisa.', 'bold-pagos-en-linea') . '</h6>';
+        }
         $signature = esc_attr(hash("sha256", "{$orderReference}{$amount}{$currency}{$secretKey}"));
         $redirectionUrl = isset($attrs["redirectionurl"]) ? esc_attr($attrs["redirectionurl"]) : '';
         $description = isset($attrs["description"]) ? esc_attr($attrs["description"]) : '';
         $style_parts = isset($attrs["color"]) ? explode('-', esc_attr($attrs["color"])) : ['dark', 'L'];
         $color_button = $style_parts[0];
         $size_button = isset($style_parts[1]) ? esc_attr($style_parts[1]) : 'L';
-        $woocommerce_bold_version = "wordpress-shortcode-3.5.1";
+        $woocommerce_bold_version = "wordpress-shortcode-3.5.2";
 
         return wp_kses(BoldCommon::getButtonScript(
             esc_attr($apiKey),

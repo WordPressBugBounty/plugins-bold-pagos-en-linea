@@ -1,4 +1,11 @@
 *** Bold pagos en linea ***
+2026-11-19  - version 3.5.2
+
+Security - Improved validation of test mode notifications.
+Security - Improved protection of settings and keys in the admin panel.
+Security - Improved validation of payment button data.
+Fixed - Order status checks now run with limits.
+
 2026-11-18  - version 3.5.1
 
 Security - Improved validation of payment notifications.

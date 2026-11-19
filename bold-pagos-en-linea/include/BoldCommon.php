@@ -12,6 +12,10 @@ class BoldCommon {
     // Maximum number of characters supported by Bold for the reference
     const REFERENCE_MAX_LENGTH = 60;
 
+    // Single source of truth for supported currencies: add a new one here.
+    const SUPPORTED_CURRENCIES = [ 'COP', 'USD' ];
+    const DEFAULT_CURRENCY     = 'COP';
+
     // Key for obfuscation
     private static $obfuscationKey = "BoldPaymentButton";
 
@@ -530,7 +534,7 @@ class BoldCommon {
      * @param string|null $description The order description. Optional. Default is null.
      * @param string|null $redirectionUrl The URL for redirection after payment. Optional. Default is null.
      * @param string $bold_color_button The color of the button. Optional. Default is 'dark'.
-     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.5.1'.
+     * @param string $woocommerce_bold_version The Bold integration version. Optional. Default is 'wordpress-3.5.2'.
      * @param string $size The button size. Optional. Default is 'L'.
      * @return string The HTML script for the payment button.
      */
@@ -543,11 +547,20 @@ class BoldCommon {
         $description = null,
         $redirectionUrl = null,
         $bold_color_button = 'dark',
-        $woocommerce_bold_version = 'wordpress-3.5.1',
+        $woocommerce_bold_version = 'wordpress-3.5.2',
         $size = 'L'
         ) : string
     {
         $tags_enabled = self::getTagsButtonScriptEnabled();
+        // Escape at output so no caller can inject into the script tag (esc_attr does not double-encode).
+        $apiKey = esc_attr( $apiKey );
+        $amount = esc_attr( $amount );
+        $currency = esc_attr( $currency );
+        $orderReference = esc_attr( $orderReference );
+        $signature = esc_attr( $signature );
+        $bold_color_button = esc_attr( $bold_color_button );
+        $woocommerce_bold_version = esc_attr( $woocommerce_bold_version );
+        $size = esc_attr( $size );
         $redirectionUrl = $redirectionUrl ? "data-redirection-url='" . esc_attr($redirectionUrl) . "'" : '';
         $description = $description ? "data-description='" . esc_attr($description) . "'" : '';
         $originUrl = self::getOptionKey('origin_url') !== '' ? "data-origin-url='" . esc_attr(self::getOptionKey('origin_url')) . "'" : '';
@@ -723,6 +736,27 @@ class BoldCommon {
         $domain       = substr( self::getSiteDomainSlug(), 0, max( 0, $max_domain ) );
 
         return $fixed_part . $domain . $timestamp_ns;
+    }
+
+    public static function isSupportedCurrency( $currency ): bool {
+        return in_array( $currency, self::SUPPORTED_CURRENCIES, true );
+    }
+
+    /**
+     * Builds a button reference that never ends in a digit, so it cannot run into the amount in the signature input.
+     */
+    public static function buildButtonReference( string $prefix ): string {
+        return $prefix . sprintf( '%.0f', microtime( true ) * 1e9 ) . '-b';
+    }
+
+    /**
+     * Checks that amount is a canonical non-negative number and currency a supported code, before signing.
+     *
+     * @param mixed $amount
+     */
+    public static function isValidButtonPayment( $amount, string $currency ): bool {
+        return preg_match( '/^(0|[1-9]\d*)(\.\d+)?$/', (string) $amount ) === 1
+            && self::isSupportedCurrency( $currency );
     }
 
     /**
